@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 120" width="100%" height="100%" style="background-color: #0b0f19; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <defs>
+    <!-- Background & Glowing Gradients -->
+    <linearGradient id="primary-glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F2FE" />
+      <stop offset="100%" stop-color="#4FACFE" />
+    </linearGradient>
+
+    <linearGradient id="accent-glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00EA96" />
+      <stop offset="100%" stop-color="#00F2FE" />
+    </linearGradient>
+
+    <linearGradient id="text-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#E2E8F0" />
+    </linearGradient>
+
+    <!-- Node Glow Filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Left Icon Mark: Paretoium Frontier & Nodes -->
+  <g transform="translate(25, 10)">
+    <!-- Pareto Optimization Curve (Frontier) -->
+    <path d="M 15 85 Q 35 35 85 15" fill="none" stroke="url(#primary-glow)" stroke-width="3" stroke-dasharray="4 2" opacity="0.6" />
+
+    <!-- Graph Edges (Prerequisites) -->
+    <line x1="25" y1="75" x2="50" y2="45" stroke="#334155" stroke-width="2.5" />
+    <line x1="50" y1="45" x2="80" y2="25" stroke="url(#accent-glow)" stroke-width="3" />
+    <line x1="25" y1="75" x2="65" y2="75" stroke="#334155" stroke-width="2.5" />
+    <line x1="65" y1="75" x2="80" y2="25" stroke="url(#accent-glow)" stroke-width="3" filter="url(#glow)" />
+
+    <!-- Graph Nodes -->
+    <!-- Base Node 1 -->
+    <circle cx="25" cy="75" r="6" fill="#1E293B" stroke="#64748B" stroke-width="2" />
+    
+    <!-- Base Node 2 -->
+    <circle cx="65" cy="75" r="6" fill="#1E293B" stroke="#64748B" stroke-width="2" />
+
+    <!-- Optimal Intermediate Node -->
+    <circle cx="50" cy="45" r="7" fill="#0B0F19" stroke="url(#primary-glow)" stroke-width="2.5" filter="url(#glow)" />
+
+    <!-- Optimal Target Node (Pareto Peak) -->
+    <circle cx="80" cy="25" r="9" fill="url(#accent-glow)" filter="url(#glow)" />
+    <circle cx="80" cy="25" r="4" fill="#0B0F19" />
+  </g>
+
+  <!-- Brand Name Typography -->
+  <g transform="translate(135, 68)">
+    <!-- Primary Brand Text -->
+    <text x="0" y="0" font-size="38" font-weight="800" letter-spacing="0.5" fill="url(#text-grad)">Pareto<tspan fill="url(#primary-glow)">ium</tspan></text>
+    
+    <!-- Subtitle / Tagline -->
+    <text x="2" y="22" font-size="12" font-weight="500" letter-spacing="2" fill="#64748B">COURSE PATH OPTIMIZER</text>
+  </g>
+</svg>
