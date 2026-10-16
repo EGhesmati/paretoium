@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -78,6 +79,24 @@ func (c CourseNode) Validate() error {
 	return nil
 }
 
+// UnmarshalJSON supports both study_hours and estimated_hours JSON keys.
+func (c *CourseNode) UnmarshalJSON(data []byte) error {
+	type Alias CourseNode
+	aux := struct {
+		*Alias
+		EstimatedHours *float64 `json:"estimated_hours,omitempty"`
+	}{
+		Alias: (*Alias)(c),
+	}
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+	if aux.EstimatedHours != nil && c.StudyHours == 0 {
+		c.StudyHours = *aux.EstimatedHours
+	}
+	return nil
+}
+
 // PrerequisiteEdge represents dependencies between courses.
 // GroupType and GroupID allow modeling both AND and OR prerequisite logic.
 // If GroupID is empty, it acts as a standalone AND prerequisite.
@@ -86,23 +105,82 @@ func (c CourseNode) Validate() error {
 type PrerequisiteEdge struct {
 	FromID    string          `json:"from_id"`            // Prerequisite course ID
 	ToID      string          `json:"to_id"`              // Target course ID
+	From      string          `json:"from,omitempty"`     // Ergonomic alias for FromID
+	To        string          `json:"to,omitempty"`       // Ergonomic alias for ToID
 	GroupType PrereqGroupType `json:"group_type"`         // AND or OR
+	Type      PrereqGroupType `json:"type,omitempty"`     // Ergonomic alias for GroupType
 	GroupID   string          `json:"group_id,omitempty"` // Group identifier for grouped requirements
+}
+
+// Source returns the prerequisite origin course ID.
+func (e PrerequisiteEdge) Source() string {
+	if e.FromID != "" {
+		return e.FromID
+	}
+	return e.From
+}
+
+// Target returns the dependent target course ID.
+func (e PrerequisiteEdge) Target() string {
+	if e.ToID != "" {
+		return e.ToID
+	}
+	return e.To
+}
+
+// PrereqType returns the logical relationship type (defaults to AND).
+func (e PrerequisiteEdge) PrereqType() PrereqGroupType {
+	if e.GroupType != "" {
+		return e.GroupType
+	}
+	if e.Type != "" {
+		return e.Type
+	}
+	return PrereqGroupAND
+}
+
+// UnmarshalJSON supports both from/to/type and from_id/to_id/group_type JSON keys.
+func (e *PrerequisiteEdge) UnmarshalJSON(data []byte) error {
+	type Alias PrerequisiteEdge
+	aux := struct {
+		*Alias
+		From string          `json:"from,omitempty"`
+		To   string          `json:"to,omitempty"`
+		Type PrereqGroupType `json:"type,omitempty"`
+	}{
+		Alias: (*Alias)(e),
+	}
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+	if aux.From != "" && e.FromID == "" {
+		e.FromID = aux.From
+	}
+	if aux.To != "" && e.ToID == "" {
+		e.ToID = aux.To
+	}
+	if aux.Type != "" && e.GroupType == "" {
+		e.GroupType = aux.Type
+	}
+	return nil
 }
 
 // Validate checks whether the prerequisite edge attributes are valid.
 func (e PrerequisiteEdge) Validate() error {
-	if strings.TrimSpace(e.FromID) == "" || strings.TrimSpace(e.ToID) == "" {
+	from := e.Source()
+	to := e.Target()
+	if strings.TrimSpace(from) == "" || strings.TrimSpace(to) == "" {
 		return ErrEmptyEdgeEndpoints
 	}
-	if e.FromID == e.ToID {
-		return fmt.Errorf("%w: node %q cannot require itself", ErrSelfPrerequisite, e.FromID)
+	if from == to {
+		return fmt.Errorf("%w: node %q cannot require itself", ErrSelfPrerequisite, from)
 	}
-	switch e.GroupType {
-	case PrereqGroupAND, PrereqGroupOR, "":
-		// valid (default to AND when empty)
+	pType := e.PrereqType()
+	switch pType {
+	case PrereqGroupAND, PrereqGroupOR:
+		// valid
 	default:
-		return fmt.Errorf("%w: %s", ErrInvalidGroupType, e.GroupType)
+		return fmt.Errorf("%w: %s", ErrInvalidGroupType, pType)
 	}
 	return nil
 }
@@ -144,25 +222,23 @@ func GroupPrerequisitesForNode(targetID string, edges []PrerequisiteEdge) []Prer
 	var standaloneANDs []string
 
 	for _, edge := range edges {
-		if edge.ToID != targetID {
+		if edge.Target() != targetID {
 			continue
 		}
 
-		groupType := edge.GroupType
-		if groupType == "" {
-			groupType = PrereqGroupAND
-		}
+		groupType := edge.PrereqType()
+		fromID := edge.Source()
 
 		if edge.GroupID == "" {
 			if groupType == PrereqGroupAND {
-				standaloneANDs = append(standaloneANDs, edge.FromID)
+				standaloneANDs = append(standaloneANDs, fromID)
 			} else {
 				// Standalone OR treated as a single-element group with synthetic ID
-				key := fmt.Sprintf("or_single_%s", edge.FromID)
+				key := fmt.Sprintf("or_single_%s", fromID)
 				groupMap[key] = &PrerequisiteGroup{
 					GroupID: key,
 					Type:    PrereqGroupOR,
-					NodeIDs: []string{edge.FromID},
+					NodeIDs: []string{fromID},
 				}
 			}
 			continue
@@ -177,7 +253,7 @@ func GroupPrerequisitesForNode(targetID string, edges []PrerequisiteEdge) []Prer
 			}
 			groupMap[edge.GroupID] = group
 		}
-		group.NodeIDs = append(group.NodeIDs, edge.FromID)
+		group.NodeIDs = append(group.NodeIDs, fromID)
 	}
 
 	initialCap := len(groupMap)
@@ -289,11 +365,11 @@ func NewCurriculumGraph(nodes []CourseNode, edges []PrerequisiteEdge) (*Curricul
 		if err := edge.Validate(); err != nil {
 			return nil, fmt.Errorf("invalid edge index %d: %w", i, err)
 		}
-		if _, exists := nodeMap[edge.FromID]; !exists {
-			return nil, fmt.Errorf("%w: from_id %q", ErrNodeNotFound, edge.FromID)
+		if _, exists := nodeMap[edge.Source()]; !exists {
+			return nil, fmt.Errorf("%w: from_id %q", ErrNodeNotFound, edge.Source())
 		}
-		if _, exists := nodeMap[edge.ToID]; !exists {
-			return nil, fmt.Errorf("%w: to_id %q", ErrNodeNotFound, edge.ToID)
+		if _, exists := nodeMap[edge.Target()]; !exists {
+			return nil, fmt.Errorf("%w: to_id %q", ErrNodeNotFound, edge.Target())
 		}
 	}
 
@@ -302,3 +378,24 @@ func NewCurriculumGraph(nodes []CourseNode, edges []PrerequisiteEdge) (*Curricul
 		Edges: edges,
 	}, nil
 }
+
+// CurriculumPayload represents raw curriculum JSON containing slices of nodes and edges.
+type CurriculumPayload struct {
+	Nodes []CourseNode       `json:"nodes"`
+	Edges []PrerequisiteEdge `json:"edges"`
+}
+
+// ToGraph validates and converts the payload into a CurriculumGraph.
+func (cp CurriculumPayload) ToGraph() (*CurriculumGraph, error) {
+	return NewCurriculumGraph(cp.Nodes, cp.Edges)
+}
+
+// LoadCurriculumFromJSON parses JSON bytes into a validated CurriculumGraph.
+func LoadCurriculumFromJSON(data []byte) (*CurriculumGraph, error) {
+	var payload CurriculumPayload
+	if err := json.Unmarshal(data, &payload); err != nil {
+		return nil, fmt.Errorf("failed to parse curriculum JSON: %w", err)
+	}
+	return payload.ToGraph()
+}
+

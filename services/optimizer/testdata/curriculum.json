@@ -1,0 +1,39 @@
+{
+  "nodes": [
+    { "id": "CS101", "name": "Intro to Computer Science", "difficulty": 1, "estimated_hours": 20 },
+    { "id": "CS102", "name": "Data Structures & Algorithms", "difficulty": 2, "estimated_hours": 40 },
+    { "id": "CS201", "name": "Computer Architecture", "difficulty": 3, "estimated_hours": 35 },
+    { "id": "CS202", "name": "Operating Systems", "difficulty": 4, "estimated_hours": 45 },
+    { "id": "CS203", "name": "Database Systems", "difficulty": 2, "estimated_hours": 30 },
+    { "id": "CS301", "name": "Networking", "difficulty": 3, "estimated_hours": 30 },
+    { "id": "CS302", "name": "Distributed Systems", "difficulty": 5, "estimated_hours": 50 },
+    { "id": "CS303", "name": "Compiler Design", "difficulty": 5, "estimated_hours": 50 },
+    { "id": "MATH101", "name": "Discrete Mathematics", "difficulty": 2, "estimated_hours": 25 },
+    { "id": "MATH102", "name": "Linear Algebra", "difficulty": 3, "estimated_hours": 30 },
+    { "id": "AI101", "name": "Intro to AI", "difficulty": 3, "estimated_hours": 35 },
+    { "id": "AI102", "name": "Machine Learning", "difficulty": 4, "estimated_hours": 45 },
+    { "id": "WEB101", "name": "Web Development Fundamentals", "difficulty": 1, "estimated_hours": 15 },
+    { "id": "WEB102", "name": "Full-Stack Web Dev", "difficulty": 3, "estimated_hours": 35 },
+    { "id": "CAP500", "name": "Capstone Project", "difficulty": 5, "estimated_hours": 60 }
+  ],
+  "edges": [
+    { "from": "CS101", "to": "CS102", "type": "AND" },
+    { "from": "MATH101", "to": "CS102", "type": "AND" },
+    { "from": "CS102", "to": "CS201", "type": "AND" },
+    { "from": "CS201", "to": "CS202", "type": "AND" },
+    { "from": "CS102", "to": "CS203", "type": "AND" },
+    { "from": "CS202", "to": "CS301", "type": "AND" },
+    { "from": "CS301", "to": "CS302", "type": "AND" },
+    { "from": "CS203", "to": "CS302", "type": "AND" },
+    { "from": "CS102", "to": "CS303", "type": "AND" },
+    { "from": "MATH102", "to": "AI101", "type": "AND" },
+    { "from": "CS102", "to": "AI101", "type": "AND" },
+    { "from": "AI101", "to": "AI102", "type": "AND" },
+    { "from": "CS101", "to": "WEB101", "type": "AND" },
+    { "from": "WEB101", "to": "WEB102", "type": "AND" },
+    { "from": "CS203", "to": "WEB102", "type": "OR" },
+    { "from": "CS302", "to": "CAP500", "type": "AND" },
+    { "from": "WEB102", "to": "CAP500", "type": "AND" }
+  ]
+}
+

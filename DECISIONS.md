@@ -12,4 +12,9 @@ This log records major architectural choices, trade-offs, and justifications mad
 - **Decision**: Modeled course dependencies as directed prerequisite edges equipped with explicit `GroupType` (`AND` / `OR`) and `GroupID` fields, rather than monolithic nested expressions or flat adjacency lists.
 - **Rationale**: Supports flexible curriculum rules (e.g. elective branches where 1 of N prerequisites suffices) while remaining directly convertible into directed graphs for Gonum topological validation and Pareto pathfinding.
 
+### Day 3: Test Dataset & Cycle-Detection Test Harness (TDD)
+- **Decision**: Established a 15-node baseline curriculum (`testdata/curriculum.json`) and authored intentionally failing cycle tests (`internal/validator`) prior to writing graph traversal logic.
+- **Rationale**: Adheres to strict Test-Driven Development (TDD) ensuring that direct cycles, multi-hop indirect cycles, and self-loops have dedicated failure assertions before Gonum topological sorting is implemented on Day 4.
+
+
 

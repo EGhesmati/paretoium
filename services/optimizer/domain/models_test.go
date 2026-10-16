@@ -3,6 +3,7 @@ package domain_test
 import (
 	"encoding/json"
 	"errors"
+	"os"
 	"testing"
 
 	"paretoium/services/optimizer/domain"
@@ -466,3 +467,41 @@ func TestCurriculumGraph_Instantiation(t *testing.T) {
 		t.Fatalf("expected error for duplicate node ID, got nil")
 	}
 }
+
+func TestLoadSampleCurriculumJSON(t *testing.T) {
+	data, err := os.ReadFile("../testdata/curriculum.json")
+	if err != nil {
+		t.Fatalf("failed to read testdata/curriculum.json: %v", err)
+	}
+
+	graph, err := domain.LoadCurriculumFromJSON(data)
+	if err != nil {
+		t.Fatalf("failed to load curriculum from JSON: %v", err)
+	}
+
+	if len(graph.Nodes) != 15 {
+		t.Errorf("expected 15 nodes, got %d", len(graph.Nodes))
+	}
+	if len(graph.Edges) != 17 {
+		t.Errorf("expected 17 edges, got %d", len(graph.Edges))
+	}
+
+	// Verify sample node attributes
+	cs101, exists := graph.Nodes["CS101"]
+	if !exists {
+		t.Fatalf("expected node CS101 to exist")
+	}
+	if cs101.StudyHours != 20.0 {
+		t.Errorf("expected CS101 study hours to be 20, got %f", cs101.StudyHours)
+	}
+	if cs101.Difficulty != 1.0 {
+		t.Errorf("expected CS101 difficulty to be 1, got %f", cs101.Difficulty)
+	}
+
+	// Verify sample edge attributes
+	web102Prereqs := domain.GroupPrerequisitesForNode("WEB102", graph.Edges)
+	if len(web102Prereqs) == 0 {
+		t.Errorf("expected prerequisites for WEB102")
+	}
+}
+
