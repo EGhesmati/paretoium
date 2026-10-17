@@ -61,8 +61,8 @@ func (g *CurriculumGraph) BuildFromDomain(nodes []domain.CourseNode, edges []dom
 			return fmt.Errorf("BuildFromDomain: unknown target course %q", edge.Target())
 		}
 
-		// Skip duplicate edges silently — simple.DirectedGraph panics on duplicates
-		if g.DirectedGraph.HasEdgeBetween(fromID, toID) {
+		// Skip only if this exact directed edge already exists
+		if g.DirectedGraph.HasEdgeFromTo(fromID, toID) {
 			continue
 		}
 
