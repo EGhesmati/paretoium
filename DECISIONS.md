@@ -16,6 +16,7 @@ This log records major architectural choices, trade-offs, and justifications mad
 - **Decision**: Established a 15-node baseline curriculum (`testdata/curriculum.json`) and authored intentionally failing cycle tests (`internal/validator`) prior to writing graph traversal logic.
 - **Rationale**: Adheres to strict Test-Driven Development (TDD) ensuring that direct cycles, multi-hop indirect cycles, and self-loops have dedicated failure assertions before Gonum topological sorting is implemented on Day 4.
 
-- Day 4: Selected Gonum Topo for cycle detection using Johnson's algorithm.
-
+### Day 4: Graph Validation & Cycle Detection
+- **Decision**: Used Gonum Topo's `DirectedCyclesIn`, which implements Johnson's algorithm, to detect directed cycles in curriculum graphs.
+- **Rationale**: Reuses a well-tested graph algorithm to validate the DAG invariant, and the 15-node sample plus direct, indirect, and self-loop tests now pass.
 
