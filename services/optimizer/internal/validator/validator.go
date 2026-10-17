@@ -1,21 +1,44 @@
 package validator
 
 import (
-	"errors"
+	"fmt"
 
 	"paretoium/services/optimizer/domain"
+	internalgraph "paretoium/services/optimizer/internal/graph"
 )
 
 var (
-	// ErrCycleDetected indicates that the curriculum graph contains at least one cycle.
-	ErrCycleDetected = errors.New("cycle detected in graph")
+	// ErrCycleDetected is returned when the curriculum graph contains one or more directed cycles.
+	ErrCycleDetected = fmt.Errorf("cycle detected in graph")
 )
 
-// ValidateGraph checks that the given graph nodes and edges form a valid Directed Acyclic Graph (DAG).
+// ValidateGraph checks that the given nodes and edges form a valid Directed Acyclic Graph (DAG).
 //
-// NOTE: On Day 3, this is an intentional stub to establish failing cycle-detection tests (TDD).
-// The complete Gonum topological cycle-detection and validation algorithm will be implemented on Day 4.
+// Delegates to CurriculumGraph.Validate() which enforces:
+//   - Non-empty graph
+//   - No self-loop prerequisites
+//   - No duplicate edges
+//   - No missing node references
+//   - No directed cycles (via gonum/graph/topo)
+//   - Valid topological ordering
 func ValidateGraph(nodes []domain.CourseNode, edges []domain.PrerequisiteEdge) error {
-	// Day 3 stub: validation returns nil, causing cycle tests to fail as expected.
+	// 1. Pre-build self-loop check (before FromDomain, which skips edges to the same node)
+	for _, edge := range edges {
+		if edge.Source() == edge.Target() {
+			return fmt.Errorf("%w: self-loop on node %q", ErrCycleDetected, edge.Source())
+		}
+	}
+
+	// 2. Build Gonum-backed curriculum graph
+	g, err := internalgraph.FromDomain(nodes, edges)
+	if err != nil {
+		return fmt.Errorf("failed to build curriculum graph: %w", err)
+	}
+
+	// 3. Run full domain validation (empty check, duplicates, cycles, topo sort)
+	if err := g.Validate(); err != nil {
+		return fmt.Errorf("%w: %s", ErrCycleDetected, err.Error())
+	}
+
 	return nil
 }
