@@ -14,32 +14,30 @@ var (
 
 // ValidateGraph checks that the given nodes and edges form a valid Directed Acyclic Graph (DAG).
 //
-// It builds a Gonum-backed CurriculumGraph via the graph adapter and runs
-// topo.DirectedCyclesIn to detect:
-//   - Self-loops (A → A)
-//   - Direct cycles (A → B → A)
-//   - Indirect cycles (A → B → C → A)
-//
-// Returns nil for a valid DAG, or a descriptive error wrapping ErrCycleDetected on failure.
+// Delegates to CurriculumGraph.Validate() which enforces:
+//   - Non-empty graph
+//   - No self-loop prerequisites
+//   - No duplicate edges
+//   - No missing node references
+//   - No directed cycles (via gonum/graph/topo)
+//   - Valid topological ordering
 func ValidateGraph(nodes []domain.CourseNode, edges []domain.PrerequisiteEdge) error {
-	// 1. Detect self-loops early (before graph build) since simple.DirectedGraph
-	//    ignores self-loops in HasEdgeBetween checks
+	// 1. Pre-build self-loop check (before FromDomain, which skips edges to the same node)
 	for _, edge := range edges {
 		if edge.Source() == edge.Target() {
 			return fmt.Errorf("%w: self-loop on node %q", ErrCycleDetected, edge.Source())
 		}
 	}
 
-	// 2. Build the Gonum-backed directed graph from domain models
+	// 2. Build Gonum-backed curriculum graph
 	g, err := internalgraph.FromDomain(nodes, edges)
 	if err != nil {
 		return fmt.Errorf("failed to build curriculum graph: %w", err)
 	}
 
-	// 3. Run Gonum cycle detection via topo.DirectedCyclesIn
-	_, cycleErr := g.DetectCycles()
-	if cycleErr != nil {
-		return fmt.Errorf("%w: %s", ErrCycleDetected, cycleErr.Error())
+	// 3. Run full domain validation (empty check, duplicates, cycles, topo sort)
+	if err := g.Validate(); err != nil {
+		return fmt.Errorf("%w: %s", ErrCycleDetected, err.Error())
 	}
 
 	return nil

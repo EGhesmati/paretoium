@@ -108,6 +108,12 @@ func (g *CurriculumGraph) EdgeCount() int {
 	return len(g.Edges)
 }
 
+// InjectEdgesForTest replaces the Edges slice for white-box testing of Validate().
+// This allows tests to inject self-loops or duplicates that BuildFromDomain would reject.
+func (g *CurriculumGraph) InjectEdgesForTest(edges []domain.PrerequisiteEdge) {
+	g.Edges = edges
+}
+
 // DetectCycles uses gonum/graph/topo to find all directed cycles in the curriculum graph.
 //
 // Returns a slice of cycles (each cycle is a slice of int64 node IDs) and an error
@@ -130,7 +136,64 @@ func (g *CurriculumGraph) DetectCycles() ([][]int64, error) {
 	return formattedCycles, fmt.Errorf("curriculum contains %d cycle(s)", len(cycles))
 }
 
+// Validate performs full domain validation of the curriculum graph:
+//
+//  1. Empty graph guard — a graph with no nodes is meaningless.
+//  2. Duplicate edge detection — every (from, to) pair must appear at most once.
+//  3. Self-loop detection — a course cannot list itself as a prerequisite.
+//  4. Missing node reference — every edge endpoint must have a corresponding node.
+//  5. Cycle detection — no directed cycle is permitted (DAG invariant).
+//  6. Topological sort — confirms the DAG property via topo.Sort.
+//
+// Returns nil for a fully valid curriculum graph, or the first encountered error.
+func (g *CurriculumGraph) Validate() error {
+	// 1. Empty graph guard
+	if len(g.courseMap) == 0 {
+		return fmt.Errorf("graph contains no nodes")
+	}
+
+	// 2 & 3. Scan domain edges for duplicate and self-referential prerequisites
+	seen := make(map[[2]string]bool)
+	for _, edge := range g.Edges {
+		src, tgt := edge.Source(), edge.Target()
+
+		// Self-loop
+		if src == tgt {
+			return fmt.Errorf("self-referential prerequisite: course %q lists itself", src)
+		}
+
+		// Missing source node reference
+		if _, ok := g.idIndex[src]; !ok {
+			return fmt.Errorf("missing node reference: edge source %q has no corresponding node", src)
+		}
+
+		// Missing target node reference
+		if _, ok := g.idIndex[tgt]; !ok {
+			return fmt.Errorf("missing node reference: edge target %q has no corresponding node", tgt)
+		}
+
+		// Duplicate edge
+		key := [2]string{src, tgt}
+		if seen[key] {
+			return fmt.Errorf("duplicate prerequisite edge: %q → %q appears more than once", src, tgt)
+		}
+		seen[key] = true
+	}
+
+	// 4. Cycle detection via topo.DirectedCyclesIn
+	cycles, err := g.DetectCycles()
+	if err != nil {
+		return fmt.Errorf("validation failed — cycles detected %v: %w", cycles, err)
+	}
+
+	// 5. Topological sort confirms the DAG property end-to-end
+	if _, err := topo.Sort(g); err != nil {
+		return fmt.Errorf("topological sort failed: %w", err)
+	}
+
+	return nil
+}
+
 // Compile-time interface checks
 var _ gonumgraph.Node = simple.Node(0)
 var _ gonumgraph.Directed = (*simple.DirectedGraph)(nil)
-

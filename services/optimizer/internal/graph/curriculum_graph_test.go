@@ -184,3 +184,119 @@ func TestFromDomain_ConvenienceConstructor(t *testing.T) {
 	}
 }
 
+// ─── Validate ─────────────────────────────────────────────────────────────────
+
+func TestValidate_EmptyGraph(t *testing.T) {
+	g := internalgraph.NewCurriculumGraph()
+	if err := g.Validate(); err == nil {
+		t.Error("expected error for empty graph, got nil")
+	}
+}
+
+func TestValidate_ValidDAG(t *testing.T) {
+	nodes := []domain.CourseNode{
+		{ID: "CS101", Name: "Intro to CS", StudyHours: 20, Difficulty: 1},
+		{ID: "CS102", Name: "Data Structures", StudyHours: 40, Difficulty: 2},
+		{ID: "CS201", Name: "Algorithms", StudyHours: 35, Difficulty: 3},
+	}
+	edges := []domain.PrerequisiteEdge{
+		{From: "CS101", To: "CS102"},
+		{From: "CS102", To: "CS201"},
+	}
+
+	g, err := internalgraph.FromDomain(nodes, edges)
+	if err != nil {
+		t.Fatalf("unexpected build error: %v", err)
+	}
+	if err := g.Validate(); err != nil {
+		t.Errorf("expected valid DAG, got error: %v", err)
+	}
+}
+
+func TestValidate_SelfLoop(t *testing.T) {
+	nodes := []domain.CourseNode{
+		{ID: "A", Name: "Course A", StudyHours: 10, Difficulty: 1},
+	}
+	// Self-loops are injected directly to the Edges slice to bypass BuildFromDomain
+	g := internalgraph.NewCurriculumGraph()
+	_ = g.BuildFromDomain(nodes, nil)
+	g.InjectEdgesForTest([]domain.PrerequisiteEdge{
+		{From: "A", To: "A"},
+	})
+	if err := g.Validate(); err == nil {
+		t.Error("expected error for self-loop, got nil")
+	}
+}
+
+func TestValidate_DuplicateEdge(t *testing.T) {
+	nodes := []domain.CourseNode{
+		{ID: "A", Name: "Course A", StudyHours: 10, Difficulty: 1},
+		{ID: "B", Name: "Course B", StudyHours: 10, Difficulty: 1},
+	}
+	// Build with one edge, then inject duplicate into Edges list
+	g, err := internalgraph.FromDomain(nodes, []domain.PrerequisiteEdge{
+		{From: "A", To: "B"},
+	})
+	if err != nil {
+		t.Fatalf("unexpected build error: %v", err)
+	}
+	// Manually inject duplicate into the Edges list
+	g.InjectEdgesForTest([]domain.PrerequisiteEdge{
+		{From: "A", To: "B"},
+		{From: "A", To: "B"}, // duplicate
+	})
+	if err := g.Validate(); err == nil {
+		t.Error("expected error for duplicate edge, got nil")
+	}
+}
+
+func TestValidate_DirectCycle(t *testing.T) {
+	nodes := []domain.CourseNode{
+		{ID: "A", Name: "Course A", StudyHours: 10, Difficulty: 1},
+		{ID: "B", Name: "Course B", StudyHours: 10, Difficulty: 1},
+	}
+	edges := []domain.PrerequisiteEdge{
+		{From: "A", To: "B"},
+		{From: "B", To: "A"}, // direct cycle
+	}
+	g, err := internalgraph.FromDomain(nodes, edges)
+	if err != nil {
+		t.Fatalf("unexpected build error: %v", err)
+	}
+	if err := g.Validate(); err == nil {
+		t.Error("expected error for direct cycle A->B->A, got nil")
+	}
+}
+
+func TestValidate_IndirectCycle(t *testing.T) {
+	nodes := []domain.CourseNode{
+		{ID: "A", Name: "Course A", StudyHours: 10, Difficulty: 1},
+		{ID: "B", Name: "Course B", StudyHours: 10, Difficulty: 1},
+		{ID: "C", Name: "Course C", StudyHours: 10, Difficulty: 1},
+	}
+	edges := []domain.PrerequisiteEdge{
+		{From: "A", To: "B"},
+		{From: "B", To: "C"},
+		{From: "C", To: "A"}, // indirect cycle
+	}
+	g, err := internalgraph.FromDomain(nodes, edges)
+	if err != nil {
+		t.Fatalf("unexpected build error: %v", err)
+	}
+	if err := g.Validate(); err == nil {
+		t.Error("expected error for indirect cycle A->B->C->A, got nil")
+	}
+}
+
+func TestValidate_SingleNodeNoEdges(t *testing.T) {
+	nodes := []domain.CourseNode{
+		{ID: "CS101", Name: "Intro to CS", StudyHours: 20, Difficulty: 1},
+	}
+	g, err := internalgraph.FromDomain(nodes, nil)
+	if err != nil {
+		t.Fatalf("unexpected build error: %v", err)
+	}
+	if err := g.Validate(); err != nil {
+		t.Errorf("expected single isolated node to be valid, got error: %v", err)
+	}
+}
