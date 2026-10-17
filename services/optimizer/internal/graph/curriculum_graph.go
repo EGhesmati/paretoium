@@ -5,6 +5,7 @@ import (
 
 	gonumgraph "gonum.org/v1/gonum/graph"
 	"gonum.org/v1/gonum/graph/simple"
+	"gonum.org/v1/gonum/graph/topo"
 
 	"paretoium/services/optimizer/domain"
 )
@@ -105,6 +106,28 @@ func (g *CurriculumGraph) NodeCount() int {
 // EdgeCount returns the number of domain edges stored on the graph.
 func (g *CurriculumGraph) EdgeCount() int {
 	return len(g.Edges)
+}
+
+// DetectCycles uses gonum/graph/topo to find all directed cycles in the curriculum graph.
+//
+// Returns a slice of cycles (each cycle is a slice of int64 node IDs) and an error
+// if any cycle exists. Returns (nil, nil) for a valid DAG.
+func (g *CurriculumGraph) DetectCycles() ([][]int64, error) {
+	cycles := topo.DirectedCyclesIn(g)
+
+	if len(cycles) == 0 {
+		return nil, nil
+	}
+
+	formattedCycles := make([][]int64, 0, len(cycles))
+	for _, cycle := range cycles {
+		path := make([]int64, 0, len(cycle))
+		for _, node := range cycle {
+			path = append(path, node.ID())
+		}
+		formattedCycles = append(formattedCycles, path)
+	}
+	return formattedCycles, fmt.Errorf("curriculum contains %d cycle(s)", len(cycles))
 }
 
 // Compile-time interface checks

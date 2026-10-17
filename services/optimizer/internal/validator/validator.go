@@ -1,21 +1,46 @@
 package validator
 
 import (
-	"errors"
+	"fmt"
 
 	"paretoium/services/optimizer/domain"
+	internalgraph "paretoium/services/optimizer/internal/graph"
 )
 
 var (
-	// ErrCycleDetected indicates that the curriculum graph contains at least one cycle.
-	ErrCycleDetected = errors.New("cycle detected in graph")
+	// ErrCycleDetected is returned when the curriculum graph contains one or more directed cycles.
+	ErrCycleDetected = fmt.Errorf("cycle detected in graph")
 )
 
-// ValidateGraph checks that the given graph nodes and edges form a valid Directed Acyclic Graph (DAG).
+// ValidateGraph checks that the given nodes and edges form a valid Directed Acyclic Graph (DAG).
 //
-// NOTE: On Day 3, this is an intentional stub to establish failing cycle-detection tests (TDD).
-// The complete Gonum topological cycle-detection and validation algorithm will be implemented on Day 4.
+// It builds a Gonum-backed CurriculumGraph via the graph adapter and runs
+// topo.DirectedCyclesIn to detect:
+//   - Self-loops (A → A)
+//   - Direct cycles (A → B → A)
+//   - Indirect cycles (A → B → C → A)
+//
+// Returns nil for a valid DAG, or a descriptive error wrapping ErrCycleDetected on failure.
 func ValidateGraph(nodes []domain.CourseNode, edges []domain.PrerequisiteEdge) error {
-	// Day 3 stub: validation returns nil, causing cycle tests to fail as expected.
+	// 1. Detect self-loops early (before graph build) since simple.DirectedGraph
+	//    ignores self-loops in HasEdgeBetween checks
+	for _, edge := range edges {
+		if edge.Source() == edge.Target() {
+			return fmt.Errorf("%w: self-loop on node %q", ErrCycleDetected, edge.Source())
+		}
+	}
+
+	// 2. Build the Gonum-backed directed graph from domain models
+	g, err := internalgraph.FromDomain(nodes, edges)
+	if err != nil {
+		return fmt.Errorf("failed to build curriculum graph: %w", err)
+	}
+
+	// 3. Run Gonum cycle detection via topo.DirectedCyclesIn
+	_, cycleErr := g.DetectCycles()
+	if cycleErr != nil {
+		return fmt.Errorf("%w: %s", ErrCycleDetected, cycleErr.Error())
+	}
+
 	return nil
 }
