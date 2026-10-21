@@ -20,3 +20,6 @@ This log records major architectural choices, trade-offs, and justifications mad
 - **Decision**: Used Gonum Topo's `DirectedCyclesIn`, which implements Johnson's algorithm, to detect directed cycles in curriculum graphs.
 - **Rationale**: Reuses a well-tested graph algorithm to validate the DAG invariant, and the 15-node sample plus direct, indirect, and self-loop tests now pass.
 
+### Day 5: Cost Function Test Contract
+- **Decision**: Defined cost as a weighted sum of study hours and difficulty, with independent caller-provided weights, and added tests for equal weighting, prioritization, and zero weights.
+- **Rationale**: Makes the trade-off between time and difficulty explicit and configurable; the tests intentionally precede the Day 6 implementation.
