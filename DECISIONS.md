@@ -23,3 +23,7 @@ This log records major architectural choices, trade-offs, and justifications mad
 ### Day 5: Cost Function Test Contract
 - **Decision**: Defined cost as a weighted sum of study hours and difficulty, with independent caller-provided weights, and added tests for equal weighting, prioritization, and zero weights.
 - **Rationale**: Makes the trade-off between time and difficulty explicit and configurable; the tests intentionally precede the Day 6 implementation.
+
+### Day 6: Cost Function Implementation
+- **Decision**: Implemented cost as `study hours * study-hours weight + difficulty * difficulty weight`.
+- **Rationale**: Keeps the Day 5 contract transparent and lets callers control each factor's contribution without coupling the domain function to optimization policy.
