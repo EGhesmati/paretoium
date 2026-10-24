@@ -27,3 +27,6 @@ This log records major architectural choices, trade-offs, and justifications mad
 ### Day 6: Cost Function Implementation
 - **Decision**: Implemented cost as `study hours * study-hours weight + difficulty * difficulty weight`.
 - **Rationale**: Keeps the Day 5 contract transparent and lets callers control each factor's contribution without coupling the domain function to optimization policy.
+
+### Day 7: Buffer
+- **Decision**: Kept Day 7 as a buffer with no optimizer behavior or dependency changes, preserving room to resolve issues before edge-case work begins.
