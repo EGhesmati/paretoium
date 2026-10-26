@@ -30,3 +30,7 @@ This log records major architectural choices, trade-offs, and justifications mad
 
 ### Day 7: Buffer
 - **Decision**: Kept Day 7 as a buffer with no optimizer behavior or dependency changes, preserving room to resolve issues before edge-case work begins.
+
+### Day 8: Edge-Case Tests
+- **Decision**: Verified empty and single-node graphs through the public validator and clarified that zero-valued budgets mean no configured limit.
+- **Rationale**: Covers graph validation boundaries and the default constraint behavior without changing optimizer semantics.

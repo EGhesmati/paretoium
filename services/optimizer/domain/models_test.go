@@ -417,6 +417,11 @@ func TestConstraintSet_ValidationAndBudget(t *testing.T) {
 		t.Errorf("expected over budget when depth exceeds 4")
 	}
 
+	unlimited := domain.ConstraintSet{}
+	if !unlimited.WithinBudget(80.0, 15.0, 3) {
+		t.Errorf("expected zero-valued budgets to leave limits unspecified")
+	}
+
 	// CompletedMap and TargetMap lookups
 	completed := cs.CompletedMap()
 	if !completed["cs101"] || completed["cs102"] {
@@ -504,4 +509,3 @@ func TestLoadSampleCurriculumJSON(t *testing.T) {
 		t.Errorf("expected prerequisites for WEB102")
 	}
 }
-
