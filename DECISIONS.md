@@ -34,3 +34,7 @@ This log records major architectural choices, trade-offs, and justifications mad
 ### Day 8: Edge-Case Tests
 - **Decision**: Verified empty and single-node graphs through the public validator and clarified that zero-valued budgets mean no configured limit.
 - **Rationale**: Covers graph validation boundaries and the default constraint behavior without changing optimizer semantics.
+
+### Day 9: Edge-Case Validation
+- **Decision**: Validate all course nodes and prerequisite references before populating the Gonum graph.
+- **Rationale**: Rejects invalid or duplicate nodes and prevents failed graph builds from leaving partially populated state.
