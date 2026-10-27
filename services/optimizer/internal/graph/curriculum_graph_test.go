@@ -164,6 +164,59 @@ func TestBuildFromDomain_UnknownTargetReturnsError(t *testing.T) {
 	}
 }
 
+func TestBuildFromDomain_RejectsInvalidNodesBeforeMutatingGraph(t *testing.T) {
+	tests := []struct {
+		name  string
+		nodes []domain.CourseNode
+	}{
+		{
+			name: "duplicate node ID",
+			nodes: []domain.CourseNode{
+				{ID: "A", Name: "Course A"},
+				{ID: "A", Name: "Duplicate Course A"},
+			},
+		},
+		{
+			name: "empty node name",
+			nodes: []domain.CourseNode{
+				{ID: "A"},
+			},
+		},
+		{
+			name: "negative study hours",
+			nodes: []domain.CourseNode{
+				{ID: "A", Name: "Course A", StudyHours: -1},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			g := internalgraph.NewCurriculumGraph()
+			if err := g.BuildFromDomain(test.nodes, nil); err == nil {
+				t.Fatal("expected invalid nodes to be rejected")
+			}
+			if g.NodeCount() != 0 || g.EdgeCount() != 0 {
+				t.Fatalf("invalid input mutated graph: nodes=%d edges=%d", g.NodeCount(), g.EdgeCount())
+			}
+		})
+	}
+}
+
+func TestBuildFromDomain_UnknownReferenceDoesNotMutateGraph(t *testing.T) {
+	g := internalgraph.NewCurriculumGraph()
+	err := g.BuildFromDomain(
+		[]domain.CourseNode{{ID: "A", Name: "Course A"}},
+		[]domain.PrerequisiteEdge{{From: "A", To: "MISSING"}},
+	)
+	if err == nil {
+		t.Fatal("expected error for unknown target node")
+	}
+	if g.NodeCount() != 0 || g.EdgeCount() != 0 {
+		t.Fatalf("invalid input mutated graph: nodes=%d edges=%d", g.NodeCount(), g.EdgeCount())
+	}
+}
+
 // ─── FromDomain convenience constructor ──────────────────────────────────────
 
 func TestFromDomain_ConvenienceConstructor(t *testing.T) {

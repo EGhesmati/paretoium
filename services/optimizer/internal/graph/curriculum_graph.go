@@ -42,6 +42,10 @@ func NewCurriculumGraph() *CurriculumGraph {
 // Each domain.PrerequisiteEdge is added as a simple.WeightedEdge (weight = 1.0).
 // Edge direction: Prerequisite → Target Course (i.e. FromID → ToID).
 func (g *CurriculumGraph) BuildFromDomain(nodes []domain.CourseNode, edges []domain.PrerequisiteEdge) error {
+	if _, err := domain.NewCurriculumGraph(nodes, edges); err != nil {
+		return fmt.Errorf("invalid curriculum: %w", err)
+	}
+
 	// Step 1: Register all nodes first so edges can safely reference them
 	for i, course := range nodes {
 		id := int64(i + 1) // Gonum reserves 0; start sequential IDs at 1
