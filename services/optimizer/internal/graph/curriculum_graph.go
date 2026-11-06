@@ -107,6 +107,25 @@ func (g *CurriculumGraph) NodeCount() int {
 	return len(g.courseMap)
 }
 
+// CourseIDs returns a slice of all string course IDs registered in the graph.
+func (g *CurriculumGraph) CourseIDs() []string {
+	ids := make([]string, 0, len(g.idIndex))
+	for id := range g.idIndex {
+		ids = append(ids, id)
+	}
+	return ids
+}
+
+// CourseByStringID returns the domain.CourseNode for a string course ID.
+func (g *CurriculumGraph) CourseByStringID(courseID string) (domain.CourseNode, bool) {
+	gonumID, ok := g.idIndex[courseID]
+	if !ok {
+		return domain.CourseNode{}, false
+	}
+	course, ok := g.courseMap[gonumID]
+	return course, ok
+}
+
 // EdgeCount returns the number of domain edges stored on the graph.
 func (g *CurriculumGraph) EdgeCount() int {
 	return len(g.Edges)
