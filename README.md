@@ -20,3 +20,39 @@ paretoium/
     └── optimizer/      # Go pathfinding service
 ```
 
+## Go Optimizer API
+
+Run the service from `services/optimizer`:
+
+```sh
+go run ./cmd/optimizer
+```
+
+The service listens on port `8080` by default. Set `PORT` to change it.
+
+- `GET /healthz` returns `{"status":"ok"}`.
+- `POST /api/v1/optimize` accepts a curriculum and optional constraints:
+
+```json
+{
+  "nodes": [
+    {"id": "intro", "name": "Introduction", "study_hours": 10, "difficulty": 2},
+    {"id": "advanced", "name": "Advanced", "study_hours": 20, "difficulty": 5}
+  ],
+  "edges": [
+    {"from_id": "intro", "to_id": "advanced", "group_type": "AND"}
+  ],
+  "constraints": {
+    "target_course_ids": ["advanced"],
+    "max_study_hours": 40,
+    "max_difficulty": 10,
+    "max_depth": 3
+  }
+}
+```
+
+The optimize response contains the non-dominated `pareto_frontier`, the
+minimum-hours `express_path`, and the minimum-difficulty `deep_mastery_path`.
+Each path label has `node_id`, `total_hours`, `total_difficulty`, and `path`
+fields. Invalid JSON, constraints, or curricula return HTTP 400 with a JSON
+`error`.

@@ -38,3 +38,23 @@ This log records major architectural choices, trade-offs, and justifications mad
 ### Day 9: Edge-Case Validation
 - **Decision**: Validate all course nodes and prerequisite references before populating the Gonum graph.
 - **Rationale**: Rejects invalid or duplicate nodes and prevents failed graph builds from leaving partially populated state.
+
+### Days 10–11: Pareto Label-Setting
+- **Decision**: Propagate non-dominated study-hour and difficulty labels over the curriculum DAG in topological order.
+- **Rationale**: Retains alternatives that trade study time for difficulty without reducing the problem to a single weighted score.
+
+### Day 12: Frontier Bounds
+- **Decision**: Cap each node's Pareto frontier at 500 labels, keeping the lowest-hours, then lowest-difficulty labels with deterministic path tie-breaking.
+- **Rationale**: Bounds worst-case path growth while producing repeatable results.
+
+### Day 13: Recommended Paths
+- **Decision**: Select the minimum-hours frontier label as Express and the minimum-difficulty label as Deep Mastery, breaking ties by the other metric.
+- **Rationale**: Exposes the two useful extremes of the frontier without discarding the alternatives.
+
+### Day 14: Fuzz Coverage
+- **Decision**: Fuzz the optimize HTTP handler with arbitrary request bodies in addition to table-driven algorithm tests.
+- **Rationale**: Exercises malformed and adversarial JSON inputs for panics before deployment.
+
+### Day 15: Optimizer HTTP API
+- **Decision**: Expose `GET /healthz` and `POST /api/v1/optimize` through Chi, returning the frontier and recommended paths as JSON.
+- **Rationale**: Keeps the Go engine accessible over the project's JSON HTTP boundary without introducing frontend concerns.
