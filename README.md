@@ -55,4 +55,12 @@ The optimize response contains the non-dominated `pareto_frontier`, the
 minimum-hours `express_path`, and the minimum-difficulty `deep_mastery_path`.
 Each path label has `node_id`, `total_hours`, `total_difficulty`, and `path`
 fields. Invalid JSON, constraints, or curricula return HTTP 400 with a JSON
-`error`.
+`error`; request bodies over the 1 MiB limit return HTTP 413.
+
+The HTTP server applies read-header, read, write, and idle timeouts. Run the
+optimizer tests and node-count benchmarks from `services/optimizer`:
+
+```sh
+go test ./...
+go test -bench=BenchmarkRunPareto -benchmem ./internal/pareto
+```
