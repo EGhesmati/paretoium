@@ -2,6 +2,7 @@ package httpapi
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -14,6 +15,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 )
+
+const maxRequestBodyBytes = 1 << 20
 
 type optimizeRequest struct {
 	Nodes       []domain.CourseNode       `json:"nodes"`
@@ -41,12 +44,20 @@ func health(w http.ResponseWriter, _ *http.Request) {
 
 func optimize(w http.ResponseWriter, r *http.Request) {
 	var request optimizeRequest
-	decoder := json.NewDecoder(r.Body)
+	decoder := json.NewDecoder(http.MaxBytesReader(w, r.Body, maxRequestBodyBytes))
 	if err := decoder.Decode(&request); err != nil {
+		if isRequestBodyTooLarge(err) {
+			writeError(w, http.StatusRequestEntityTooLarge, "request body exceeds 1 MiB limit")
+			return
+		}
 		writeError(w, http.StatusBadRequest, fmt.Sprintf("invalid JSON request: %v", err))
 		return
 	}
 	if err := decoder.Decode(&struct{}{}); err != io.EOF {
+		if isRequestBodyTooLarge(err) {
+			writeError(w, http.StatusRequestEntityTooLarge, "request body exceeds 1 MiB limit")
+			return
+		}
 		writeError(w, http.StatusBadRequest, "request body must contain a single JSON value")
 		return
 	}
@@ -76,6 +87,11 @@ func optimize(w http.ResponseWriter, r *http.Request) {
 		ExpressPath:     express,
 		DeepMasteryPath: deepMastery,
 	})
+}
+
+func isRequestBodyTooLarge(err error) bool {
+	var maxBytesError *http.MaxBytesError
+	return errors.As(err, &maxBytesError)
 }
 
 func writeError(w http.ResponseWriter, status int, message string) {

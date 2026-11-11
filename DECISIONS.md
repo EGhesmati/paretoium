@@ -58,3 +58,15 @@ This log records major architectural choices, trade-offs, and justifications mad
 ### Day 15: Optimizer HTTP API
 - **Decision**: Expose `GET /healthz` and `POST /api/v1/optimize` through Chi, returning the frontier and recommended paths as JSON.
 - **Rationale**: Keeps the Go engine accessible over the project's JSON HTTP boundary without introducing frontend concerns.
+
+### Day 16: HTTP Hardening
+- **Decision**: Limit optimize requests to 1 MiB and configure finite HTTP server read, write, and idle timeouts.
+- **Rationale**: Bounds request processing and prevents slow or oversized clients from holding server resources indefinitely.
+
+### Day 17: Optimizer Benchmarks
+- **Decision**: Benchmark the Pareto optimizer on linear curricula from 50 to 500 nodes in 50-node increments.
+- **Rationale**: Provides a repeatable baseline for observing optimizer cost as graph size grows.
+
+### Day 18: Pull Request CI
+- **Decision**: Run `go test ./...` on every pull request with the Go version declared by the optimizer module.
+- **Rationale**: Makes the existing Go test suite a required automated check for proposed changes.

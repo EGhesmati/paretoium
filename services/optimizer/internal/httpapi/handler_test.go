@@ -84,6 +84,7 @@ func TestOptimizeRejectsInvalidRequests(t *testing.T) {
 	}{
 		{name: "invalid json", body: `{"nodes":`},
 		{name: "multiple values", body: `{} {}`},
+		{name: "invalid constraints", body: `{"nodes":[],"edges":[],"constraints":{"max_depth":-1}}`},
 		{name: "invalid graph", body: `{"nodes":[{"id":"a","name":"A","study_hours":1,"difficulty":1},{"id":"b","name":"B","study_hours":1,"difficulty":1}],"edges":[{"from_id":"a","to_id":"b","group_type":"AND"},{"from_id":"b","to_id":"a","group_type":"AND"}]}`},
 	}
 	for _, test := range tests {
@@ -96,6 +97,25 @@ func TestOptimizeRejectsInvalidRequests(t *testing.T) {
 				t.Fatalf("expected status %d, got %d: %s", http.StatusBadRequest, response.Code, response.Body)
 			}
 		})
+	}
+}
+
+func TestOptimizeRejectsOversizedRequest(t *testing.T) {
+	body := `{"padding":"` + strings.Repeat("x", (1<<20)+1) + `"}`
+	request := httptest.NewRequest(http.MethodPost, "/api/v1/optimize", strings.NewReader(body))
+	response := httptest.NewRecorder()
+
+	httpapi.NewRouter().ServeHTTP(response, request)
+
+	if response.Code != http.StatusRequestEntityTooLarge {
+		t.Fatalf("expected status %d, got %d: %s", http.StatusRequestEntityTooLarge, response.Code, response.Body)
+	}
+	var result map[string]string
+	if err := json.Unmarshal(response.Body.Bytes(), &result); err != nil {
+		t.Fatalf("decode oversized request response: %v", err)
+	}
+	if result["error"] != "request body exceeds 1 MiB limit" {
+		t.Fatalf("unexpected error message: %q", result["error"])
 	}
 }
 
