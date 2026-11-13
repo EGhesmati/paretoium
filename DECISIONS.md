@@ -70,3 +70,11 @@ This log records major architectural choices, trade-offs, and justifications mad
 ### Day 18: Pull Request CI
 - **Decision**: Run `go test ./...` on every pull request with the Go version declared by the optimizer module.
 - **Rationale**: Makes the existing Go test suite a required automated check for proposed changes.
+
+### Day 19: Backend Integration & Release
+- **Decision**: Integrate the completed Go backend into `main` through a pull request, then publish the `v0.1` tag after CI passes.
+- **Rationale**: Uses the repository's configured default branch as the release target and ties the initial backend release to the existing automated test gate.
+
+### Day 20: Buffer
+- **Decision**: Keep Day 20 as a stabilization buffer without adding optimizer behavior or dependencies.
+- **Rationale**: The optimizer test suite and `go vet` pass, so the buffer preserves a clean checkpoint before starting the next phase.
