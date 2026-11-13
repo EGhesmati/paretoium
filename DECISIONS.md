@@ -78,3 +78,7 @@ This log records major architectural choices, trade-offs, and justifications mad
 ### Day 20: Buffer
 - **Decision**: Keep Day 20 as a stabilization buffer without adding optimizer behavior or dependencies.
 - **Rationale**: The optimizer test suite and `go vet` pass, so the buffer preserves a clean checkpoint before starting the next phase.
+
+### Day 21: Next.js Web Foundation
+- **Decision**: Scaffold `apps/web` as a Next.js App Router application using TypeScript and Tailwind CSS.
+- **Rationale**: Establishes the frontend workspace independently from the Go optimizer; API integration and graph visualization remain in their scheduled later days.
