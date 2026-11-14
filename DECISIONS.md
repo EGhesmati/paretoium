@@ -82,3 +82,4 @@ This log records major architectural choices, trade-offs, and justifications mad
 ### Day 21: Next.js Web Foundation
 - **Decision**: Scaffold `apps/web` as a Next.js App Router application using TypeScript and Tailwind CSS.
 - **Rationale**: Establishes the frontend workspace independently from the Go optimizer; API integration and graph visualization remain in their scheduled later days.
+- **Visual direction**: Use a Mozilla Protocol-inspired editorial layout with accessible contrast and purple accents, without Mozilla branding or assets.

@@ -1,31 +1,151 @@
+const principles = [
+  {
+    number: "01",
+    title: "Start with prerequisites",
+    description:
+      "Courses and their requirements form a graph, so a path respects what needs to come first.",
+  },
+  {
+    number: "02",
+    title: "Compare the trade-offs",
+    description:
+      "The optimizer tracks study hours and difficulty separately instead of hiding them in one score.",
+  },
+  {
+    number: "03",
+    title: "Choose what fits",
+    description:
+      "Compare faster and less-difficult options, then decide which trade-off works for you.",
+  },
+];
+
 export default function Home() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 py-16 text-slate-100">
-      <section className="w-full max-w-2xl rounded-3xl border border-slate-800 bg-slate-900 p-8 shadow-2xl shadow-black/20 sm:p-12">
-        <p className="text-sm font-semibold tracking-[0.2em] text-cyan-300 uppercase">
-          Paretoium
-        </p>
-        <h1 className="mt-6 text-4xl font-semibold tracking-tight sm:text-5xl">
-          Course paths, optimized.
-        </h1>
-        <p className="mt-5 max-w-xl text-lg leading-8 text-slate-300">
-          The web app foundation is ready. The Go optimizer will power course
-          path recommendations as the product is built out.
-        </p>
-        <div className="mt-10 flex flex-wrap gap-2">
-          {["Next.js", "TypeScript", "Tailwind CSS"].map((technology) => (
-            <span
-              key={technology}
-              className="rounded-full border border-slate-700 bg-slate-800 px-3 py-1.5 text-sm text-slate-200"
-            >
-              {technology}
+    <main>
+      <header className="site-header">
+        <a aria-label="Paretoium home" className="wordmark" href="#">
+          <span aria-hidden="true" className="wordmark-mark">
+            p
+          </span>
+          paretoium
+        </a>
+        <nav aria-label="Main navigation" className="main-nav">
+          <a href="#approach">Our approach</a>
+          <a className="nav-cta" href="#optimizer">
+            Meet the optimizer <span aria-hidden="true">↗</span>
+          </a>
+        </nav>
+      </header>
+
+      <section aria-labelledby="hero-title" className="hero">
+        <div className="hero-copy">
+          <p className="eyebrow">
+            <span aria-hidden="true" className="eyebrow-dot" />
+            A course path optimizer
+          </p>
+          <h1 id="hero-title">
+            Your next step
+            <br />
+            <span>starts with a plan.</span>
+          </h1>
+          <p className="hero-description">
+            Plan a route through your courses with prerequisites in mind.
+            Paretoium compares study time and difficulty to help you see the
+            trade-offs—not just one black-box answer.
+          </p>
+          <a className="button button-primary" href="#approach">
+            See how it works <span aria-hidden="true">↓</span>
+          </a>
+        </div>
+
+        <aside aria-label="What the optimizer does" className="optimizer-card" id="optimizer">
+          <div className="card-topline">
+            <span className="card-kicker">THE ENGINE</span>
+            <span className="status-pill">
+              <span aria-hidden="true" />
+              Go · available
             </span>
+          </div>
+          <h2>More than one way forward.</h2>
+          <p>
+            The Go engine checks prerequisite graphs and finds paths that
+            balance two goals.
+          </p>
+          <div className="objective-list">
+            <div className="objective-row">
+              <span className="objective-icon hours-icon" aria-hidden="true">
+                ↗
+              </span>
+              <span>
+                <strong>Study time</strong>
+                <small>Find a faster route</small>
+              </span>
+            </div>
+            <div className="objective-row">
+              <span className="objective-icon difficulty-icon" aria-hidden="true">
+                ◒
+              </span>
+              <span>
+                <strong>Difficulty</strong>
+                <small>Find a gentler route</small>
+              </span>
+            </div>
+          </div>
+          <div className="card-footnote">
+            <span aria-hidden="true">✳</span>
+            Results are calculated by explicit, testable rules.
+          </div>
+        </aside>
+        <span aria-hidden="true" className="hero-spark hero-spark-one">
+          ✳
+        </span>
+        <span aria-hidden="true" className="hero-spark hero-spark-two">
+          ✳
+        </span>
+      </section>
+
+      <section aria-labelledby="approach-title" className="approach" id="approach">
+        <div className="section-heading">
+          <p className="eyebrow">A clearer way to decide</p>
+          <h2 id="approach-title">
+            You bring the goals.
+            <br />
+            <span>We map the options.</span>
+          </h2>
+        </div>
+        <div className="principle-list">
+          {principles.map((principle) => (
+            <article className="principle" key={principle.number}>
+              <span className="principle-number">{principle.number}</span>
+              <div>
+                <h3>{principle.title}</h3>
+                <p>{principle.description}</p>
+              </div>
+            </article>
           ))}
         </div>
-        <p className="mt-10 border-t border-slate-800 pt-6 text-sm text-slate-400">
-          Frontend and optimizer are separate services connected over HTTP.
+      </section>
+
+      <section aria-label="Project status" className="status-banner">
+        <div>
+          <p className="eyebrow">Built in the open</p>
+          <h2>The optimizer is ready. The web experience is growing.</h2>
+        </div>
+        <p>
+          This is the web foundation. Course maps and Gemini-powered study
+          features are planned for later.
         </p>
       </section>
+
+      <footer className="site-footer">
+        <a className="wordmark footer-wordmark" href="#">
+          <span aria-hidden="true" className="wordmark-mark">
+            p
+          </span>
+          paretoium
+        </a>
+        <p>Make your next learning move with clarity.</p>
+      </footer>
     </main>
   );
 }
