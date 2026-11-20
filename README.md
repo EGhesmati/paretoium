@@ -1,14 +1,15 @@
 # Paretoium
 
-A multi-objective course path optimizer featuring a high-performance Go optimization engine, an interactive Next.js visual canvas using React Flow, and AI-assisted study features powered by Gemini.
+A course path optimizer with a Go optimization engine and a Next.js web-app foundation. The React Flow course canvas and Gemini study assistant are planned roadmap features.
 
 ## Tech Stack
 
 - **Optimization Engine**: Go (Chi, Gonum)
-- **Frontend**: Next.js (TypeScript, Tailwind CSS, React Flow)
-- **Database**: PostgreSQL (Neon, Prisma ORM)
-- **AI Integration**: Gemini API (`@ai-sdk/google`)
-- **Deployment**: AWS Lightsail Containers & Vercel
+- **Web foundation**: Next.js, TypeScript, Tailwind CSS
+- **Course map (planned)**: React Flow
+- **Database (planned)**: PostgreSQL (Neon, Prisma ORM)
+- **AI features (planned)**: Gemini API (`@ai-sdk/google`)
+- **Deployment targets (planned)**: AWS Lightsail Containers & Vercel
 
 ## Project Structure
 
@@ -19,6 +20,20 @@ paretoium/
 └── services/
     └── optimizer/      # Go pathfinding service
 ```
+
+## Web App
+
+The Day 21 web foundation is in `apps/web` and uses Next.js, TypeScript, and
+Tailwind CSS. Start it locally with:
+
+```sh
+cd apps/web
+npm install
+npm run dev
+```
+
+Open `http://localhost:3000`. The frontend is not yet connected to the optimizer;
+the Go API client is planned for a later roadmap day.
 
 ## Go Optimizer API
 
