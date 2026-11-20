@@ -19,3 +19,8 @@ npm run lint
 npm run typecheck
 npm run build
 ```
+
+## Database
+
+Day 22 defines the PostgreSQL data model with Prisma. Copy `.env.example` to
+`.env.local` and set `DATABASE_URL` before running database commands.

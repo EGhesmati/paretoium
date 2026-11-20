@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String            @id @default(cuid())
+  email     String            @unique
+  name      String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  histories UserPathHistory[]
+}
+
+model Course {
+  id          String      @id @default(cuid())
+  code        String      @unique
+  title       String
+  description String?
+  studyHours  Float
+  difficulty  Int
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  topicNodes  TopicNode[]
+}
+
+model TopicNode {
+  id          String  @id @default(cuid())
+  title       String
+  description String?
+  courseId    String
+  course      Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  outgoingEdges Edge[] @relation("EdgeSource")
+  incomingEdges Edge[] @relation("EdgeTarget")
+
+  @@unique([courseId, title])
+  @@index([courseId])
+}
+
+model Edge {
+  id       String    @id @default(cuid())
+  sourceId String
+  targetId String
+  source   TopicNode @relation("EdgeSource", fields: [sourceId], references: [id], onDelete: Cascade)
+  target   TopicNode @relation("EdgeTarget", fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@unique([sourceId, targetId])
+  @@index([targetId])
+}
+
+model UserPathHistory {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name       String
+  pathType   String
+  courseIds  Json
+  studyHours Float
+  difficulty Int
+  createdAt  DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
