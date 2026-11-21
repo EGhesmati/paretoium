@@ -99,3 +99,7 @@ This log records major architectural choices, trade-offs, and justifications mad
 ### Day 31: React Flow Course Canvas
 - **Decision**: Render the seeded course and prerequisite data in an interactive React Flow canvas using database-backed nodes and edges.
 - **Rationale**: Establishes the visual curriculum foundation while keeping layout algorithms, custom node states, constraints, and path highlighting in their scheduled later days.
+
+### Days 26–30: Testing, Gemini, and Resilience
+- **Decision**: Add Vitest payload coverage, database-backed Gemini response caching, Flash model environment configuration, quiz and summary routes, and bounded request handling.
+- **Rationale**: Keeps generated-content behavior fallback-oriented and repeatable while separating Next.js integration from the Go optimizer and external AI provider.
