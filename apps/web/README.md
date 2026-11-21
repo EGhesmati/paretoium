@@ -22,5 +22,21 @@ npm run build
 
 ## Database
 
-Day 22 defines the PostgreSQL data model with Prisma. Copy `.env.example` to
-`.env.local` and set `DATABASE_URL` before running database commands.
+Day 23 connects the Prisma data model to Neon PostgreSQL.
+
+1. Copy `.env.example` to `.env.local`.
+2. Set `DATABASE_URL` to the Neon pooled or direct PostgreSQL connection string.
+3. Generate the Prisma client:
+
+```sh
+npm run db:generate
+```
+
+4. Apply migrations:
+
+```sh
+npm run db:deploy
+```
+
+For local schema development, use `npm run db:migrate` instead. Check migration
+state with `npm run db:status`.
