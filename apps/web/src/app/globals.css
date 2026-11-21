@@ -2,14 +2,14 @@
 
 :root {
   color-scheme: light;
-  --ink: #1b1b1b;
-  --muted: #55545a;
-  --purple: #7542e5;
-  --purple-dark: #592acb;
-  --lavender: #f2edff;
+  --ink: #131b2b;
+  --muted: #2f4a63;
+  --purple: #5b91a3;
+  --purple-dark: #2f4a63;
+  --lavender: #cfeae0;
   --paper: #fff;
-  --line: #dedbe4;
-  --yellow: #ffdc00;
+  --line: #cfeae0;
+  --yellow: #cfeae0;
 }
 
 @theme inline {
@@ -164,7 +164,7 @@ a:focus-visible {
 }
 
 .hero-description {
-  color: #424047;
+  color: var(--muted);
   font-size: 18px;
   line-height: 1.65;
   margin: 25px 0 30px;
@@ -202,9 +202,9 @@ a:focus-visible {
 
 .optimizer-card {
   background: var(--paper);
-  border: 1px solid rgb(27 27 27 / 8%);
+  border: 1px solid rgb(19 27 43 / 8%);
   border-radius: 4px;
-  box-shadow: 0 24px 65px rgb(34 19 75 / 12%);
+  box-shadow: 0 24px 65px rgb(19 27 43 / 12%);
   padding: 29px;
 }
 
@@ -225,9 +225,9 @@ a:focus-visible {
 
 .status-pill {
   align-items: center;
-  background: #e8f5e9;
+  background: var(--lavender);
   border-radius: 999px;
-  color: #245c2e;
+  color: var(--purple-dark);
   display: inline-flex;
   font-size: 11px;
   font-weight: 700;
@@ -236,7 +236,7 @@ a:focus-visible {
 }
 
 .status-pill span {
-  background: #29883e;
+  background: var(--purple);
   border-radius: 50%;
   height: 7px;
   width: 7px;
@@ -284,12 +284,12 @@ a:focus-visible {
 }
 
 .hours-icon {
-  background: #fff4bd;
-  color: #573f00;
+  background: var(--lavender);
+  color: var(--purple-dark);
 }
 
 .difficulty-icon {
-  background: #e7dfff;
+  background: #e3f1ed;
   color: var(--purple-dark);
 }
 
@@ -410,7 +410,7 @@ a:focus-visible {
 }
 
 .status-banner .eyebrow {
-  color: #cab7ff;
+  color: var(--lavender);
   margin-bottom: 13px;
 }
 

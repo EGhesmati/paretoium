@@ -7,6 +7,8 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 
 	"paretoium/services/optimizer/domain"
 	"paretoium/services/optimizer/internal/graph"
@@ -33,9 +35,33 @@ type optimizeResponse struct {
 // NewRouter creates the optimizer's HTTP routes.
 func NewRouter() http.Handler {
 	router := chi.NewRouter()
+	router.Use(corsMiddleware)
 	router.Get("/healthz", health)
 	router.Post("/api/v1/optimize", optimize)
 	return router
+}
+
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		origin := r.Header.Get("Origin")
+		allowedOrigin := strings.TrimSpace(os.Getenv("OPTIMIZER_CORS_ORIGIN"))
+		if allowedOrigin == "" {
+			allowedOrigin = "http://localhost:3000"
+		}
+
+		if origin == allowedOrigin {
+			w.Header().Set("Access-Control-Allow-Origin", allowedOrigin)
+			w.Header().Set("Vary", "Origin")
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		}
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }
 
 func health(w http.ResponseWriter, _ *http.Request) {
