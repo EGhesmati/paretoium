@@ -6,7 +6,10 @@ export async function POST(request: NextRequest) {
   const identity = request.headers.get("x-forwarded-for") ?? "local";
   const limit = checkRateLimit(`quiz:${identity}`);
   if (!limit.allowed) {
-    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    return NextResponse.json(
+      { error: "Too many requests", fallback: true },
+      { status: 429 },
+    );
   }
 
   const body = await request.json().catch(() => null) as

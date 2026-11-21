@@ -16,18 +16,22 @@ export async function generateWithCache(
 ) {
   const key = cacheKey(kind, prompt);
 
-  const cached = await prisma.aiResponseCache.findUnique({
-    where: { cacheKey: key },
-  });
-  if (cached) {
-    return { data: cached.response, fallback: false };
+  try {
+    const cached = await prisma.aiResponseCache.findUnique({
+      where: { cacheKey: key },
+    });
+    if (cached) {
+      return { data: cached.response, fallback: false, rateLimited: false };
+    }
+  } catch {
+    // Continue without cache if DB is unavailable.
   }
 
   const apiKey = process.env.GEMINI_API_KEY;
   const modelId = process.env.GEMINI_MODEL_ID;
 
   if (!apiKey || !modelId) {
-    return { data: fallback, fallback: true };
+    return { data: fallback, fallback: true, rateLimited: false };
   }
 
   try {
@@ -38,16 +42,18 @@ export async function generateWithCache(
     });
 
     const response = { text: result.text };
-    await prisma.aiResponseCache.upsert({
-      where: { cacheKey: key },
-      update: { response },
-      create: { kind, cacheKey: key, response },
-    });
-    return { data: response, fallback: false };
-  } catch (error) {
-    if (error instanceof Error && error.message.includes("429")) {
-      throw new Error("Gemini rate limit reached");
+    try {
+      await prisma.aiResponseCache.upsert({
+        where: { cacheKey: key },
+        update: { response },
+        create: { kind, cacheKey: key, response },
+      });
+    } catch {
+      // Cache write failure should not fail the response.
     }
-    return { data: fallback, fallback: true };
+    return { data: response, fallback: false, rateLimited: false };
+  } catch (error) {
+    const rateLimited = error instanceof Error && error.message.includes("429");
+    return { data: fallback, fallback: true, rateLimited };
   }
 }

@@ -1,4 +1,6 @@
-import { CurriculumCanvas } from "@/components/curriculum-canvas";
+import { Suspense } from "react";
+import { CurriculumCanvas, type CanvasCourse, type CanvasEdge } from "@/components/curriculum-canvas";
+import { prisma } from "@/lib/prisma";
 
 const principles = [
   {
@@ -39,13 +41,15 @@ const courses = [
   ["CAP500", "Capstone Project", 60, 5],
 ] as const;
 
-const courseNodes = courses.map(([code, title, studyHours, difficulty]) => ({
-  id: code,
-  code,
-  title,
-  studyHours,
-  difficulty,
-}));
+const fallbackCourses: CanvasCourse[] = courses.map(
+  ([code, title, studyHours, difficulty]) => ({
+    id: code,
+    code,
+    title,
+    studyHours,
+    difficulty,
+  }),
+);
 
 const prerequisitePairs = [
   ["CS101", "CS102"], ["MATH101", "CS102"], ["CS102", "CS201"],
@@ -56,12 +60,73 @@ const prerequisitePairs = [
   ["CS302", "CAP500"], ["WEB102", "CAP500"],
 ] as const;
 
-const canvasEdges = prerequisitePairs.map(([sourceCode, targetCode]) => ({
+const fallbackEdges: CanvasEdge[] = prerequisitePairs.map(([sourceCode, targetCode]) => ({
   sourceId: sourceCode,
   targetId: targetCode,
   sourceCode,
   targetCode,
 }));
+
+async function loadCurriculum(): Promise<{
+  courses: CanvasCourse[];
+  edges: CanvasEdge[];
+}> {
+  if (!process.env.DATABASE_URL) {
+    return { courses: fallbackCourses, edges: fallbackEdges };
+  }
+
+  try {
+    const [dbCourses, dbEdges] = await Promise.all([
+      prisma.course.findMany({ orderBy: { code: "asc" } }),
+      prisma.edge.findMany({
+        include: {
+          source: { include: { course: true } },
+          target: { include: { course: true } },
+        },
+      }),
+    ]);
+
+    if (dbCourses.length === 0) {
+      return { courses: fallbackCourses, edges: fallbackEdges };
+    }
+
+    return {
+      courses: dbCourses.map((course) => ({
+        id: course.code,
+        code: course.code,
+        title: course.title,
+        studyHours: course.studyHours,
+        difficulty: course.difficulty,
+      })),
+      edges: dbEdges.map((edge) => ({
+        sourceId: edge.source.course.code,
+        targetId: edge.target.course.code,
+        sourceCode: edge.source.course.code,
+        targetCode: edge.target.course.code,
+      })),
+    };
+  } catch {
+    return { courses: fallbackCourses, edges: fallbackEdges };
+  }
+}
+
+async function CurriculumSection() {
+  const { courses: courseNodes, edges: canvasEdges } = await loadCurriculum();
+  return (
+    <section className="canvas-section" id="canvas" aria-labelledby="canvas-title">
+      <div className="canvas-heading">
+        <div>
+          <p className="eyebrow">Live curriculum map</p>
+          <h2 id="canvas-title">Explore the course graph</h2>
+        </div>
+        <p>{courseNodes.length} seeded courses · {canvasEdges.length} prerequisite connections</p>
+      </div>
+      <div className="curriculum-canvas">
+        <CurriculumCanvas courses={courseNodes} edges={canvasEdges} />
+      </div>
+    </section>
+  );
+}
 
 export default function Home() {
   return (
@@ -117,18 +182,24 @@ export default function Home() {
         </aside>
       </section>
 
-      <section className="canvas-section" id="canvas" aria-labelledby="canvas-title">
-        <div className="canvas-heading">
-          <div>
-            <p className="eyebrow">Live curriculum map</p>
-            <h2 id="canvas-title">Explore the course graph</h2>
-          </div>
-          <p>{courseNodes.length} seeded courses · {canvasEdges.length} prerequisite connections</p>
-        </div>
-        <div className="curriculum-canvas">
-          <CurriculumCanvas courses={courseNodes} edges={canvasEdges} />
-        </div>
-      </section>
+      <Suspense
+        fallback={
+          <section className="canvas-section" id="canvas" aria-labelledby="canvas-title">
+            <div className="canvas-heading">
+              <div>
+                <p className="eyebrow">Live curriculum map</p>
+                <h2 id="canvas-title">Explore the course graph</h2>
+              </div>
+              <p>{fallbackCourses.length} seeded courses · {fallbackEdges.length} prerequisite connections</p>
+            </div>
+            <div className="curriculum-canvas">
+              <CurriculumCanvas courses={fallbackCourses} edges={fallbackEdges} />
+            </div>
+          </section>
+        }
+      >
+        <CurriculumSection />
+      </Suspense>
 
       <section aria-labelledby="approach-title" className="approach" id="approach">
         <div className="section-heading">
