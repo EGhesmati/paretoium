@@ -28,6 +28,22 @@ func TestHealth(t *testing.T) {
 	}
 }
 
+func TestCorsPreflight(t *testing.T) {
+	t.Setenv("OPTIMIZER_CORS_ORIGIN", "http://localhost:3000")
+	request := httptest.NewRequest(http.MethodOptions, "/api/v1/optimize", nil)
+	request.Header.Set("Origin", "http://localhost:3000")
+	response := httptest.NewRecorder()
+
+	httpapi.NewRouter().ServeHTTP(response, request)
+
+	if response.Code != http.StatusNoContent {
+		t.Fatalf("expected status %d, got %d", http.StatusNoContent, response.Code)
+	}
+	if got := response.Header().Get("Access-Control-Allow-Origin"); got != "http://localhost:3000" {
+		t.Fatalf("expected allowed origin, got %q", got)
+	}
+}
+
 func TestOptimizeReturnsFrontierAndRecommendedPaths(t *testing.T) {
 	body := `{
 		"nodes": [

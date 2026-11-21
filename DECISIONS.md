@@ -91,3 +91,7 @@ This log records major architectural choices, trade-offs, and justifications mad
 ### Day 23: Neon Database Connection
 - **Decision**: Configure Prisma 7 for Neon PostgreSQL with an environment-backed `DATABASE_URL`, the `pg` adapter, and deployable SQL migrations.
 - **Rationale**: Separates database credentials from source control while providing a repeatable migration path and a server-side Prisma client singleton for Next.js.
+
+### Days 24–25: Seed Data & Go Integration
+- **Decision**: Seed Computer Science and Web Development courses and topic relationships through Prisma, and proxy/consume the Go optimizer from Next.js with configurable CORS.
+- **Rationale**: Creates a reproducible database dataset and keeps browser-facing Next.js integration separate from the Go engine's JSON HTTP contract.

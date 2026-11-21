@@ -40,3 +40,12 @@ npm run db:deploy
 
 For local schema development, use `npm run db:migrate` instead. Check migration
 state with `npm run db:status`.
+
+To seed the CS and Web Development curricula:
+
+```sh
+npm run db:seed
+```
+
+Set `OPTIMIZER_URL` to the Go optimizer URL. The Next.js routes
+`GET /api/optimizer/health` and `POST /api/optimizer` proxy optimizer requests.
