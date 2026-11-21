@@ -20,14 +20,14 @@ export async function generateWithCache(
     where: { cacheKey: key },
   });
   if (cached) {
-    return cached.response;
+    return { data: cached.response, fallback: false };
   }
 
   const apiKey = process.env.GEMINI_API_KEY;
   const modelId = process.env.GEMINI_MODEL_ID;
 
   if (!apiKey || !modelId) {
-    return fallback;
+    return { data: fallback, fallback: true };
   }
 
   try {
@@ -43,11 +43,11 @@ export async function generateWithCache(
       update: { response },
       create: { kind, cacheKey: key, response },
     });
-    return response;
+    return { data: response, fallback: false };
   } catch (error) {
     if (error instanceof Error && error.message.includes("429")) {
       throw new Error("Gemini rate limit reached");
     }
-    return fallback;
+    return { data: fallback, fallback: true };
   }
 }

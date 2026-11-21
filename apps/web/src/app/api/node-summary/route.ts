@@ -24,9 +24,9 @@ export async function POST(request: NextRequest) {
   const fallback = {
     text: `${nodeName} is part of the course learning path. Review its prerequisites before studying it, then practice by completing focused exercises.`,
   };
-  const response = await generateWithCache("node-summary", prompt, fallback);
+  const result = await generateWithCache("node-summary", prompt, fallback);
   return NextResponse.json({
-    ...(response as Record<string, unknown>),
-    fallback: false,
+    ...(result.data as Record<string, unknown>),
+    fallback: result.fallback,
   });
 }

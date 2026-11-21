@@ -21,9 +21,9 @@ export async function POST(request: NextRequest) {
   const fallback = {
     text: `1. What is the main purpose of ${nodeName}? Answer: ${nodeName} concepts. 2. Which prerequisite helps with ${nodeName}? Answer: its required earlier topic. 3. How should you practice ${nodeName}? Answer: with focused exercises.`,
   };
-  const response = await generateWithCache("quiz", prompt, fallback);
+  const result = await generateWithCache("quiz", prompt, fallback);
   return NextResponse.json({
-    ...(response as Record<string, unknown>),
-    fallback: false,
+    ...(result.data as Record<string, unknown>),
+    fallback: result.fallback,
   });
 }
