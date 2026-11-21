@@ -95,3 +95,7 @@ This log records major architectural choices, trade-offs, and justifications mad
 ### Days 24–25: Seed Data & Go Integration
 - **Decision**: Seed Computer Science and Web Development courses and topic relationships through Prisma, and proxy/consume the Go optimizer from Next.js with configurable CORS.
 - **Rationale**: Creates a reproducible database dataset and keeps browser-facing Next.js integration separate from the Go engine's JSON HTTP contract.
+
+### Day 31: React Flow Course Canvas
+- **Decision**: Render the seeded course and prerequisite data in an interactive React Flow canvas using database-backed nodes and edges.
+- **Rationale**: Establishes the visual curriculum foundation while keeping layout algorithms, custom node states, constraints, and path highlighting in their scheduled later days.

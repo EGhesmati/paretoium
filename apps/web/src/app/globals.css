@@ -397,6 +397,82 @@ a:focus-visible {
   max-width: 560px;
 }
 
+.canvas-section {
+  margin: 0 auto;
+  max-width: 1160px;
+  padding: 20px 40px 100px;
+}
+
+.canvas-heading {
+  align-items: end;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.canvas-heading .eyebrow {
+  margin-bottom: 10px;
+}
+
+.canvas-heading h2 {
+  font-size: clamp(36px, 4vw, 50px);
+  letter-spacing: -0.065em;
+  margin: 0;
+}
+
+.canvas-heading > p {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 0 0 5px;
+}
+
+.curriculum-canvas {
+  background: #f7fbf9;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  height: 620px;
+  overflow: hidden;
+}
+
+.canvas-node {
+  min-width: 170px;
+  text-align: left;
+}
+
+.canvas-node-code {
+  color: var(--purple-dark);
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  margin-bottom: 5px;
+}
+
+.canvas-node strong {
+  display: block;
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.canvas-node small {
+  color: var(--muted);
+  display: block;
+  margin-top: 7px;
+}
+
+.react-flow__node {
+  border: 1px solid var(--purple);
+  border-radius: 6px;
+  background: white;
+  box-shadow: 0 8px 22px rgb(19 27 43 / 8%);
+  padding: 12px;
+}
+
+.react-flow__controls-button,
+.react-flow__controls-button:hover {
+  color: var(--ink);
+}
+
 .status-banner {
   align-items: end;
   background: var(--ink);
