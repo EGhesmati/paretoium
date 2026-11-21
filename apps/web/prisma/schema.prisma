@@ -66,3 +66,15 @@ model UserPathHistory {
 
   @@index([userId, createdAt])
 }
+
+model AiResponseCache {
+  id        String   @id @default(cuid())
+  kind      String
+  cacheKey  String   @unique
+  response  Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([kind, createdAt])
+  @@map("AIResponseCache")
+}

@@ -49,3 +49,6 @@ npm run db:seed
 
 Set `OPTIMIZER_URL` to the Go optimizer URL. The Next.js routes
 `GET /api/optimizer/health` and `POST /api/optimizer` proxy optimizer requests.
+
+AI endpoints use `GEMINI_API_KEY` and `GEMINI_MODEL_ID`, cache PostgreSQL
+responses in `AIResponseCache`, and return fallbacks when Gemini is unavailable.
