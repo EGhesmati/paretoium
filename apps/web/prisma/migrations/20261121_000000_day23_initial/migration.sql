@@ -12,7 +12,7 @@ CREATE TABLE "User" (
 -- CreateTable
 CREATE TABLE "Course" (
     "id" TEXT NOT NULL,
-    "code" TEXT NOT NOT NULL,
+    "code" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT,
     "studyHours" DOUBLE PRECISION NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE "Course" (
 -- CreateTable
 CREATE TABLE "TopicNode" (
     "id" TEXT NOT NULL,
-    "title" TEXT NOT NOT NULL,
+    "title" TEXT NOT NULL,
     "description" TEXT,
     "courseId" TEXT NOT NULL,
 
@@ -45,7 +45,7 @@ CREATE TABLE "Edge" (
 -- CreateTable
 CREATE TABLE "UserPathHistory" (
     "id" TEXT NOT NULL,
-    "userId" TEXT NOT NOT NULL,
+    "userId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "pathType" TEXT NOT NULL,
     "courseIds" JSONB NOT NULL,
