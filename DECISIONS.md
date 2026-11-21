@@ -87,3 +87,7 @@ This log records major architectural choices, trade-offs, and justifications mad
 ### Day 22: Prisma Data Model
 - **Decision**: Define PostgreSQL models for users, courses, topic nodes, directed graph edges, and saved user path history using Prisma.
 - **Rationale**: Establishes the database contract for seeded curricula and per-user progress while keeping Neon connection and migrations as separate Day 23 work.
+
+### Day 23: Neon Database Connection
+- **Decision**: Configure Prisma 7 for Neon PostgreSQL with an environment-backed `DATABASE_URL`, the `pg` adapter, and deployable SQL migrations.
+- **Rationale**: Separates database credentials from source control while providing a repeatable migration path and a server-side Prisma client singleton for Next.js.
