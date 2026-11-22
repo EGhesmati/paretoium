@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-22T19:00:00+03:00",
+  "title": "Design System: Paretoium",
+  "extensions": {
+    "colorMeta": {
+      "terracotta-coral": {
+        "role": "primary",
+        "displayName": "Terracotta Coral",
+        "canonical": "#e76f51",
+        "tonalRamp": ["#3b160e", "#612416", "#8c341f", "#b8492e", "#e76f51", "#ef927b", "#f6baa9", "#fdeee9"]
+      },
+      "veridian-jade": {
+        "role": "secondary",
+        "displayName": "Veridian Jade",
+        "canonical": "#36ba98",
+        "tonalRamp": ["#0a2921", "#114537", "#1a6652", "#258f73", "#36ba98", "#5ecba9", "#98dec8", "#ebf9f5"]
+      },
+      "apricot-amber": {
+        "role": "tertiary",
+        "displayName": "Apricot Amber",
+        "canonical": "#f4a261",
+        "tonalRamp": ["#3d210a", "#663711", "#914f18", "#c26e29", "#f4a261", "#f7ba88", "#fad4b4", "#fef2e8"]
+      },
+      "saffron-gold": {
+        "role": "tertiary",
+        "displayName": "Saffron Gold",
+        "canonical": "#e9c46a",
+        "tonalRamp": ["#382b0c", "#5e4914", "#87691d", "#b8902c", "#e9c46a", "#efd38c", "#f5e3b5", "#fcf6e3"]
+      },
+      "alabaster-ground": {
+        "role": "neutral",
+        "displayName": "Alabaster Ground",
+        "canonical": "#faf7f2",
+        "tonalRamp": ["#141210", "#26221e", "#453e37", "#6b6157", "#998c7e", "#cfc5b4", "#ede6da", "#faf7f2"]
+      },
+      "espresso-ink": {
+        "role": "neutral",
+        "displayName": "Espresso Ink",
+        "canonical": "#1c1915",
+        "tonalRamp": ["#1c1915", "#2e2923", "#474037", "#595147", "#857b6e", "#b8ad9c", "#e4ddd0", "#f5f0e8"]
+      }
+    },
+    "typographyMeta": {
+      "headline": { "displayName": "Headline", "purpose": "Page titles on main workbench and login surface." },
+      "title": { "displayName": "Title", "purpose": "Inspector course titles, active graph header, and chapter headings." },
+      "body": { "displayName": "Body", "purpose": "Descriptions, 4-page study guide prose, and quiz prompts." },
+      "label": { "displayName": "Label", "purpose": "Buttons, segmented controls, form labels, and status tags." },
+      "mono": { "displayName": "Mono", "purpose": "Course codes, route sequences, and tabular telemetry." }
+    },
+    "shadows": [
+      {
+        "name": "panel-subtle",
+        "value": "0 1px 3px rgba(30, 25, 21, 0.04)",
+        "purpose": "Resting elevation for outer workbench containers."
+      },
+      {
+        "name": "popover-float",
+        "value": "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+        "purpose": "Floating Pareto Frontier Explorer drawer and React Flow controls."
+      }
+    ],
+    "motion": [
+      {
+        "name": "surface-transition",
+        "value": "150ms ease",
+        "purpose": "Hover, focus, theme switch, and active tab transitions."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Action Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Primary workbench action such as Generate Graph or Mark as Completed.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">Generate Graph</button>",
+      "css": ".ds-btn-primary { background: var(--btn-primary-bg, #1c1915); color: var(--btn-primary-fg, #faf7f2); border: none; border-radius: 8px; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background-color 150ms ease; } .ds-btn-primary:hover { background: var(--btn-primary-hover, #332e27); } .ds-btn-primary:focus-visible { outline: 2px solid var(--accent-coral, #e76f51); outline-offset: 2px; }"
+    },
+    {
+      "name": "Route Strategy Switch",
+      "kind": "button",
+      "refersTo": "button-express-tab",
+      "description": "Segmented Express (Coral) vs. Deep Mastery (Jade) strategy selector.",
+      "html": "<div class=\"ds-strategy-well\" role=\"tablist\"><button class=\"ds-tab-express\" role=\"tab\" aria-selected=\"true\"><span>Express</span><span class=\"ds-tab-meta\">110h · 4c</span></button><button class=\"ds-tab-idle\" role=\"tab\" aria-selected=\"false\"><span>Deep Mastery</span><span class=\"ds-tab-meta\">235h · 7c</span></button></div>",
+      "css": ".ds-strategy-well { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: 8px; background: var(--bg-recessed, #f2ece1); border: 1px solid var(--border-subtle, #e4ddd0); max-width: 280px; } .ds-tab-express { display: flex; flex-direction: column; align-items: flex-start; padding: 8px; border: none; border-radius: 6px; background: #e76f51; color: #ffffff; font-size: 12px; font-weight: 600; cursor: pointer; } .ds-tab-idle { display: flex; flex-direction: column; align-items: flex-start; padding: 8px; border: none; border-radius: 6px; background: transparent; color: var(--ink-secondary, #595147); font-size: 12px; font-weight: 600; cursor: pointer; transition: color 150ms ease; } .ds-tab-idle:hover { color: var(--ink-primary, #1c1915); } .ds-tab-meta { font-family: ui-monospace, monospace; font-size: 10px; font-variant-numeric: tabular-nums; margin-top: 2px; opacity: 0.85; }"
+    },
+    {
+      "name": "Topic Input Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Top-bar curriculum topic input with warm focus border.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Generate a prerequisite graph for any subject...\" />",
+      "css": ".ds-input { width: 100%; max-width: 360px; border-radius: 8px; border: 1px solid var(--border-strong, #cfc5b4); background: var(--bg-ground, #faf7f2); color: var(--ink-primary, #1c1915); padding: 8px 14px; font-size: 13px; transition: border-color 150ms ease, background-color 150ms ease; } .ds-input::placeholder { color: var(--ink-muted, #857b6e); } .ds-input:focus { outline: none; background: var(--bg-surface, #ffffff); border-color: var(--accent-coral, #e76f51); }"
+    },
+    {
+      "name": "Preset Topic Chip",
+      "kind": "chip",
+      "description": "Quick subject chip inside the top curriculum bar.",
+      "html": "<button class=\"ds-chip\" type=\"button\">Machine Learning</button>",
+      "css": ".ds-chip { border-radius: 6px; border: 1px solid var(--border-subtle, #e4ddd0); background: var(--bg-recessed, #f2ece1); color: var(--ink-primary, #1c1915); padding: 4px 10px; font-size: 12px; font-weight: 500; cursor: pointer; transition: border-color 150ms ease; } .ds-chip:hover { border-color: var(--border-strong, #cfc5b4); }"
+    },
+    {
+      "name": "Course Node Tile (Active Route)",
+      "kind": "custom",
+      "refersTo": "course-node",
+      "description": "Compact flat hierarchical graph node on an active Express or Deep Mastery route.",
+      "html": "<div class=\"ds-course-node\"><div class=\"ds-node-top\"><div class=\"ds-node-left\"><span class=\"ds-step-badge\">2</span><span class=\"ds-node-code\">CS102</span></div><span class=\"ds-node-meta\">40h · D2</span></div><div class=\"ds-node-title\">Data Structures &amp; Algorithms</div></div>",
+      "css": ".ds-course-node { width: 204px; border-radius: 8px; padding: 10px 12px; background: var(--bg-surface, #ffffff); border: 1.5px solid #36ba98; color: var(--ink-primary, #1c1915); } .ds-node-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 4px; } .ds-node-left { display: flex; align-items: center; gap: 6px; } .ds-step-badge { background: #36ba98; color: #141210; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-variant-numeric: tabular-nums; } .ds-node-code { font-family: ui-monospace, monospace; font-size: 11px; font-weight: 600; color: var(--ink-secondary, #595147); } .ds-node-meta { font-family: ui-monospace, monospace; font-size: 10.5px; color: var(--ink-muted, #857b6e); font-variant-numeric: tabular-nums; } .ds-node-title { font-size: 12.5px; font-weight: 600; line-height: 1.35; }"
+    },
+    {
+      "name": "Theme Toggle Button",
+      "kind": "nav",
+      "description": "Light/Dark mode toggle button in the top navigation bar.",
+      "html": "<button class=\"ds-theme-btn\" type=\"button\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#e76f51\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z\"/></svg><span>Dark</span></button>",
+      "css": ".ds-theme-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-subtle, #e4ddd0); background: var(--bg-surface, #ffffff); color: var(--ink-primary, #1c1915); font-size: 12px; font-weight: 600; cursor: pointer; transition: background-color 150ms ease; } .ds-theme-btn:hover { background: var(--bg-recessed, #f2ece1); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Cartographer's Drafting Desk",
+    "overview": "Paretoium is an Operate-mode academic workbench designed to feel like a calm, tactile drafting desk rather than a generic SaaS dashboard. Every surface is built from warm mineral paper and espresso ink in light mode, inverting cleanly to deep warm charcoal and ivory in dark mode, while reserving saturated color strictly for route semantics and graph state.\n\nThe interface prioritizes scannability, hierarchical clarity, and zero visual noise. Prerequisite graphs use top-down Dagre hierarchy with orthogonal stepped connectors and compact flat course tiles so complex multi-track curricula read at a glance without floating drop-shadow clutter.",
+    "keyCharacteristics": [
+      "Warm alabaster and sandstone neutral hierarchy paired with deep espresso ink (#1c1915).",
+      "Strict two-route color encoding: Terracotta Coral for Express (Min Hours) and Veridian Jade for Deep Mastery (Max Coverage & Depth).",
+      "Flat-by-default surfaces separated by 1px hairline stone borders (#e4ddd0), reserving shadows only for floating overlays.",
+      "Native system sans-serif paired with tabular monospace (tabular-nums) for course codes, hours, and Pareto trade-off metrics.",
+      "Full Light and Dark mode parity driven by CSS custom properties (:root and html.dark)."
+    ],
+    "rules": [
+      {
+        "name": "The Semantic Route Rule",
+        "body": "Terracotta Coral always means Express (Min Hours) and Veridian Jade always means Deep Mastery or Completed. Never use either color for unrelated decorative chrome.",
+        "section": "colors"
+      },
+      {
+        "name": "The Paired-Ink Rule",
+        "body": "Because mid-tone accents (#e76f51, #36ba98, #e9c46a) can fall below 4.5:1 as small text on white, always pair small labels with their -ink token on their -soft tint, or use dark espresso text on filled Jade/Saffron pills.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Telemetry Rule",
+        "body": "Every numeric counter (hours, difficulty sum, coverage percentage, quiz score) uses tabular-nums so dragging constraint sliders never causes layout jitter.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-Tile Rule",
+        "body": "Graph course nodes carry zero drop shadows at rest; active route membership is communicated by a 1.5px Terracotta or Jade border, and non-path nodes step back to 50% opacity.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do use CSS custom properties (var(--bg-surface), var(--ink-primary), var(--border-subtle)) on all new UI elements so Light and Dark modes stay synchronized.",
+      "Do preserve pathMode (express vs. deep_mastery) when users adjust constraint sliders.",
+      "Do keep Hierarchy ↓ (TB Dagre + smoothstep orthogonal edges) as the default graph layout.",
+      "Do provide keyboard escape hatches (Esc to close inspector/drawers, Alt+Click to toggle completion)."
+    ],
+    "donts": [
+      "Don't introduce cold Tailwind slate/indigo/teal classes or neon cyan gradients.",
+      "Don't add drop shadows, floating overlapping pills, or one-sided accent bars to CourseNode tiles.",
+      "Don't place small white text on #e9c46a (Saffron) or #f4a261 (Apricot)—use dark espresso ink (#1c1915) instead.",
+      "Don't wrap study-guide sections in generic 01 / 02 / 03 marketing cards."
+    ]
+  }
+}

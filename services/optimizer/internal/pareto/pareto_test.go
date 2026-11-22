@@ -282,3 +282,116 @@ func TestMaxLabelsPerNode(t *testing.T) {
 		t.Errorf("label count %d exceeds MaxLabelsPerNode=%d", len(labels), pareto.MaxLabelsPerNode)
 	}
 }
+
+// TestRunPareto_DynamicConstraintsAndDistinctPaths verifies that a realistic curriculum DAG
+// produces distinct Express (fastest) and Deep Mastery (deepest) routes, and that tightening
+// Time Budget, Difficulty Cap, or Max Depth dynamically shifts the recommended Deep Mastery route.
+func TestRunPareto_DynamicConstraintsAndDistinctPaths(t *testing.T) {
+	nodes := []domain.CourseNode{
+		{ID: "CS101", Name: "Intro CS", StudyHours: 20, Difficulty: 1},
+		{ID: "WEB101", Name: "Web Basics", StudyHours: 15, Difficulty: 1},
+		{ID: "WEB102", Name: "Full-Stack", StudyHours: 35, Difficulty: 3},
+		{ID: "CS102", Name: "DSA", StudyHours: 40, Difficulty: 2},
+		{ID: "CS203", Name: "Databases", StudyHours: 30, Difficulty: 2},
+		{ID: "CS201", Name: "Arch", StudyHours: 35, Difficulty: 3},
+		{ID: "CS202", Name: "OS", StudyHours: 45, Difficulty: 4},
+		{ID: "CS301", Name: "Networking", StudyHours: 30, Difficulty: 3},
+		{ID: "CS302", Name: "Distributed", StudyHours: 50, Difficulty: 5},
+		{ID: "CAP500", Name: "Capstone", StudyHours: 60, Difficulty: 5},
+	}
+	edges := []domain.PrerequisiteEdge{
+		{FromID: "CS101", ToID: "WEB101", GroupType: domain.PrereqGroupAND},
+		{FromID: "WEB101", ToID: "WEB102", GroupType: domain.PrereqGroupAND},
+		{FromID: "WEB102", ToID: "CAP500", GroupType: domain.PrereqGroupAND},
+		{FromID: "CS101", ToID: "CS102", GroupType: domain.PrereqGroupAND},
+		{FromID: "CS102", ToID: "CS203", GroupType: domain.PrereqGroupAND},
+		{FromID: "CS203", ToID: "WEB102", GroupType: domain.PrereqGroupOR},
+		{FromID: "CS102", ToID: "CS201", GroupType: domain.PrereqGroupAND},
+		{FromID: "CS201", ToID: "CS202", GroupType: domain.PrereqGroupAND},
+		{FromID: "CS202", ToID: "CS301", GroupType: domain.PrereqGroupAND},
+		{FromID: "CS301", ToID: "CS302", GroupType: domain.PrereqGroupAND},
+		{FromID: "CS302", ToID: "CAP500", GroupType: domain.PrereqGroupAND},
+	}
+	g := buildGraph(t, nodes, edges)
+
+	// Generous budget with MaxDepth=7: Express should take 4-course Web route; Deep Mastery should take 7-course Systems route
+	labels, err := pareto.RunPareto(g, domain.ConstraintSet{
+		TargetCourseIDs:    []string{"CAP500"},
+		CompletedCourseIDs: []string{"CS101"},
+		MaxStudyHours:      300,
+		MaxDifficulty:      30,
+		MaxDepth:           7,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	express, deep := pareto.SelectPaths(labels)
+	if express == nil || deep == nil {
+		t.Fatalf("expected both express and deep mastery paths, got express=%v deep=%v", express, deep)
+	}
+	wantExpress := []string{"CS101", "WEB101", "WEB102", "CAP500"}
+	wantDeep := []string{"CS101", "CS102", "CS201", "CS202", "CS301", "CS302", "CAP500"}
+	if !equalStringSlice(express.Path, wantExpress) {
+		t.Errorf("expected express=%v, got %v", wantExpress, express.Path)
+	}
+	if !equalStringSlice(deep.Path, wantDeep) {
+		t.Errorf("expected deep=%v, got %v", wantDeep, deep.Path)
+	}
+	if express.TotalHours != 110 {
+		t.Errorf("expected completed CS101 to reduce express hours to 110, got %.1f", express.TotalHours)
+	}
+
+	// Tightening MaxDepth to 5 with 200h budget should shift Deep Mastery to a 5-course route
+	labelsMid, err := pareto.RunPareto(g, domain.ConstraintSet{
+		TargetCourseIDs:    []string{"CAP500"},
+		CompletedCourseIDs: []string{"CS101"},
+		MaxStudyHours:      200,
+		MaxDifficulty:      30,
+		MaxDepth:           5,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	_, deepMid := pareto.SelectPaths(labelsMid)
+	if deepMid == nil || len(deepMid.Path) != 5 {
+		t.Errorf("expected mid-budget 5-course deep path, got %v", deepMid)
+	}
+
+	// Increasing MaxDepth to 8 should expand the study plan to 8 courses and increase CoveragePct
+	labelsExpanded, err := pareto.RunPareto(g, domain.ConstraintSet{
+		TargetCourseIDs:    []string{"CAP500"},
+		CompletedCourseIDs: []string{"CS101"},
+		MaxStudyHours:      350,
+		MaxDifficulty:      35,
+		MaxDepth:           8,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	expShort, deepExpanded := pareto.SelectPaths(labelsExpanded)
+	if deepExpanded == nil || len(deepExpanded.Path) != 8 {
+		t.Errorf("expected expanded 8-course deep path, got %v", deepExpanded)
+	}
+	if expShort != nil && deepExpanded != nil && deepExpanded.CoveragePct <= expShort.CoveragePct {
+		t.Errorf("expected deep mastery coverage (%.0f%%) > express coverage (%.0f%%)", deepExpanded.CoveragePct, expShort.CoveragePct)
+	}
+	if expShort != nil && len(expShort.MissingPrereqs) == 0 {
+		t.Errorf("expected express shortcut to flag skipped core foundations in MissingPrereqs")
+	}
+
+	// Tightening MaxDepth to 4 should shift Deep Mastery to the 4-course route
+	labelsShallow, err := pareto.RunPareto(g, domain.ConstraintSet{
+		TargetCourseIDs:    []string{"CAP500"},
+		CompletedCourseIDs: []string{"CS101"},
+		MaxStudyHours:      300,
+		MaxDifficulty:      30,
+		MaxDepth:           4,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	_, deepShallow := pareto.SelectPaths(labelsShallow)
+	if deepShallow == nil || !equalStringSlice(deepShallow.Path, wantExpress) {
+		t.Errorf("expected shallow-depth deep=%v, got %v", wantExpress, deepShallow)
+	}
+}

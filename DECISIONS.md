@@ -96,10 +96,38 @@ This log records major architectural choices, trade-offs, and justifications mad
 - **Decision**: Seed Computer Science and Web Development courses and topic relationships through Prisma, and proxy/consume the Go optimizer from Next.js with configurable CORS.
 - **Rationale**: Creates a reproducible database dataset and keeps browser-facing Next.js integration separate from the Go engine's JSON HTTP contract.
 
-### Day 31: React Flow Course Canvas
-- **Decision**: Render the seeded course and prerequisite data in an interactive React Flow canvas using database-backed nodes and edges.
-- **Rationale**: Establishes the visual curriculum foundation while keeping layout algorithms, custom node states, constraints, and path highlighting in their scheduled later days.
+
 
 ### Days 26–30: Testing, Gemini, and Resilience
 - **Decision**: Add Vitest payload coverage, database-backed Gemini response caching, Flash model environment configuration, quiz and summary routes, and bounded request handling.
 - **Rationale**: Keeps generated-content behavior fallback-oriented and repeatable while separating Next.js integration from the Go optimizer and external AI provider.
+
+### Day 31: React Flow Course Canvas
+- **Decision**: Render the seeded course and prerequisite data in an interactive React Flow canvas using database-backed nodes and edges.
+- **Rationale**: Establishes the visual curriculum foundation while keeping layout algorithms, custom node states, constraints, and path highlighting in their scheduled later days.
+
+
+### Days 32–34: Dagre Layout, Custom Course Nodes, and Selection
+- **Decision**: Replace the grid layout with `@dagrejs/dagre` top-to-bottom (`TB`) auto-layout, introduce a custom `CourseNode` component (`completed`, `available`, `locked`, `hard`), and add click selection with a quick AI study/completion panel.
+- **Rationale**: Renders prerequisite dependencies cleanly and gives immediate visual feedback on course readiness and node status.
+
+### Days 35–38: Constraint Panel, Debounced Go Optimizer, and Path Highlighting
+- **Decision**: Add an interactive constraint bar (target course, max hours, max difficulty, max depth) wired to `POST /api/optimizer` with a 300ms debounce, plus an Express vs. Deep Mastery toggle that highlights active nodes and animated edges.
+- **Rationale**: Connects the React Flow canvas directly to the Go Pareto engine so users can compare faster vs. gentler routes in real time.
+
+### Neon Auth Extension: Student Login & Registration
+- **Decision**: Add `passwordHash` to `User` in Prisma/Neon, HMAC-signed `HttpOnly` session cookies (`src/lib/auth.ts`), `/api/auth/{register,login,logout,me}` routes, and `/login`.
+- **Rationale**: Enables multi-user login against Neon PostgreSQL for the GP committee demo without external auth vendor lock-in.
+
+
+### Days 32–34: Dagre Layout, Custom Course Nodes, and Selection
+- **Decision**: Replace the grid layout with `@dagrejs/dagre` top-to-bottom (`TB`) auto-layout, introduce a custom `CourseNode` component (`completed`, `available`, `locked`, `hard`), and add click selection with a quick AI study/completion panel.
+- **Rationale**: Renders prerequisite dependencies cleanly and gives immediate visual feedback on course readiness and node status.
+
+### Days 35–38: Constraint Panel, Debounced Go Optimizer, and Path Highlighting
+- **Decision**: Add an interactive constraint bar (target course, max hours, max difficulty, max depth) wired to `POST /api/optimizer` with a 300ms debounce, plus an Express vs. Deep Mastery toggle that highlights active nodes and animated edges.
+- **Rationale**: Connects the React Flow canvas directly to the Go Pareto engine so users can compare faster vs. gentler routes in real time.
+
+### Neon Auth Extension: Student Login & Registration
+- **Decision**: Add `passwordHash` to `User` in Prisma/Neon, HMAC-signed `HttpOnly` session cookies (`src/lib/auth.ts`), `/api/auth/{register,login,logout,me}` routes, and `/login`.
+- **Rationale**: Enables multi-user login against Neon PostgreSQL for the GP committee demo without external auth vendor lock-in.

@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"paretoium/services/optimizer/domain"
-	"paretoium/services/optimizer/internal/graph"
 	"paretoium/services/optimizer/internal/pareto"
 	"paretoium/services/optimizer/internal/validator"
 
@@ -92,12 +91,7 @@ func optimize(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	if err := validator.ValidateGraph(request.Nodes, request.Edges); err != nil {
-		writeError(w, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	curriculum, err := graph.FromDomain(request.Nodes, request.Edges)
+	curriculum, err := validator.BuildValidatedGraph(request.Nodes, request.Edges)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, err.Error())
 		return

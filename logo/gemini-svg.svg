@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 500 120"
+   width="100%"
+   height="100%"
+   style="background-color: #0b0f19; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;"
+   version="1.1"
+   id="svg14"
+   sodipodi:docname="gemini-svg.svg"
+   inkscape:version="1.4.4 (dcaf3e7d, 2026-05-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview14"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="1.1423655"
+     inkscape:cx="229.78635"
+     inkscape:cy="53.83566"
+     inkscape:window-width="1430"
+     inkscape:window-height="700"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="g14" />
+  <defs
+     id="defs6">
+    <!-- Background & Glowing Gradients -->
+    <linearGradient
+       id="primary-glow"
+       x1="0%"
+       y1="0%"
+       x2="100%"
+       y2="100%">
+      <stop
+         offset="0%"
+         stop-color="#00F2FE"
+         id="stop1" />
+      <stop
+         offset="100%"
+         stop-color="#4FACFE"
+         id="stop2" />
+    </linearGradient>
+    <linearGradient
+       id="accent-glow"
+       x1="0%"
+       y1="0%"
+       x2="100%"
+       y2="100%">
+      <stop
+         offset="0%"
+         stop-color="#00EA96"
+         id="stop3" />
+      <stop
+         offset="100%"
+         stop-color="#00F2FE"
+         id="stop4" />
+    </linearGradient>
+    <linearGradient
+       id="text-grad"
+       x1="0%"
+       y1="0%"
+       x2="100%"
+       y2="0%">
+      <stop
+         offset="0%"
+         stop-color="#FFFFFF"
+         id="stop5" />
+      <stop
+         offset="100%"
+         stop-color="#E2E8F0"
+         id="stop6" />
+    </linearGradient>
+    <!-- Node Glow Filter -->
+    <filter
+       id="glow"
+       x="-0.775"
+       y="-0.775"
+       width="2.55"
+       height="2.55">
+      <feGaussianBlur
+         stdDeviation="4"
+         result="blur"
+         id="feGaussianBlur6" />
+      <feComposite
+         in="SourceGraphic"
+         in2="blur"
+         operator="over"
+         id="feComposite6" />
+    </filter>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#primary-glow"
+       id="linearGradient14"
+       x1="13.589754"
+       y1="14.368306"
+       x2="84.889831"
+       y2="85.668384"
+       gradientTransform="scale(1.0012978,0.9987039)"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#accent-glow"
+       id="linearGradient15"
+       x1="41.443138"
+       y1="28.179175"
+       x2="68.132469"
+       y2="54.868506"
+       gradientTransform="scale(1.1863954,0.84288928)"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#accent-glow"
+       id="linearGradient16"
+       x1="97.448972"
+       y1="-7.5311845"
+       x2="167.2836"
+       y2="62.30344"
+       gradientTransform="scale(0.54772256,1.8257419)"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#primary-glow"
+       id="linearGradient17"
+       x1="32.15"
+       y1="27.15"
+       x2="67.85"
+       y2="62.85"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#accent-glow"
+       id="linearGradient18"
+       x1="57.05"
+       y1="2.0500004"
+       x2="102.95"
+       y2="47.95"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <!-- Left Icon Mark: Paretoium Frontier & Nodes -->
+  <g
+     transform="translate(70.519582,11.750753)"
+     id="g13">
+    <!-- Pareto Optimization Curve (Frontier) -->
+    <path
+       d="M 15,85 Q 35,35 85,15"
+       fill="none"
+       stroke="url(#primary-glow)"
+       stroke-width="3"
+       stroke-dasharray="4, 2"
+       opacity="0.6"
+       id="path6"
+       style="stroke:url(#linearGradient14)" />
+    <!-- Graph Edges (Prerequisites) -->
+    <line
+       x1="25"
+       y1="75"
+       x2="50"
+       y2="45"
+       stroke="#334155"
+       stroke-width="2.5"
+       id="line6" />
+    <line
+       x1="50"
+       y1="45"
+       x2="80"
+       y2="25"
+       stroke="url(#accent-glow)"
+       stroke-width="3"
+       id="line7"
+       style="stroke:url(#linearGradient15)" />
+    <line
+       x1="25"
+       y1="75"
+       x2="65"
+       y2="75"
+       stroke="#334155"
+       stroke-width="2.5"
+       id="line8" />
+    <line
+       x1="65"
+       y1="75"
+       x2="80"
+       y2="25"
+       stroke="url(#accent-glow)"
+       stroke-width="3"
+       filter="url(#glow)"
+       id="line9"
+       style="stroke:url(#linearGradient16)" />
+    <!-- Graph Nodes -->
+    <!-- Base Node 1 -->
+    <circle
+       cx="25"
+       cy="75"
+       r="6"
+       fill="#1e293b"
+       stroke="#64748b"
+       stroke-width="2"
+       id="circle9" />
+    <!-- Base Node 2 -->
+    <circle
+       cx="65"
+       cy="75"
+       r="6"
+       fill="#1e293b"
+       stroke="#64748b"
+       stroke-width="2"
+       id="circle10" />
+    <!-- Optimal Intermediate Node -->
+    <circle
+       cx="50"
+       cy="45"
+       r="7"
+       fill="#0b0f19"
+       stroke="url(#primary-glow)"
+       stroke-width="2.5"
+       filter="url(#glow)"
+       id="circle11"
+       style="stroke:url(#linearGradient17)" />
+    <!-- Optimal Target Node (Pareto Peak) -->
+    <circle
+       cx="80"
+       cy="25"
+       r="9"
+       fill="url(#accent-glow)"
+       filter="url(#glow)"
+       id="circle12"
+       style="fill:url(#linearGradient18)" />
+    <circle
+       cx="80"
+       cy="25"
+       r="4"
+       fill="#0b0f19"
+       id="circle13" />
+  </g>
+  <!-- Brand Name Typography -->
+  <g
+     transform="translate(135, 68)"
+     id="g14"
+     style="fill:#1e293b;fill-opacity:1">
+    <!-- Primary Brand Text -->
+    <text
+       x="32.388935"
+       y="10.504519"
+       font-size="38px"
+       font-weight="800"
+       letter-spacing="0.5"
+       fill="url(#text-grad)"
+       id="text13"
+       style="fill:#1e293b;fill-opacity:1">Pareto<tspan
+   fill="url(#primary-glow)"
+   id="tspan13"
+   style="fill:#1e293b;fill-opacity:1">ium</tspan></text>
+    <!-- Subtitle / Tagline -->
+  </g>
+</svg>

@@ -1,4 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import {
+  buildFallbackQuiz,
+  buildQuizPrompt,
+  formatQuizAsText,
+  parseQuizQuestions,
+} from "@/lib/ai-study";
 import { generateWithCache } from "@/lib/gemini";
 import { checkRateLimit } from "@/lib/rate-limit";
 
@@ -12,21 +18,62 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const body = await request.json().catch(() => null) as
-    | { nodeName?: string; description?: string }
-    | null;
+  const body = (await request.json().catch(() => null)) as {
+    nodeName?: string;
+    description?: string;
+    topic?: string;
+    difficulty?: number;
+    prerequisites?: string[];
+  } | null;
+
   const nodeName = body?.nodeName?.trim();
   if (!nodeName) {
     return NextResponse.json({ error: "nodeName is required" }, { status: 400 });
   }
 
-  const prompt = `Create 3 short multiple-choice quiz questions about "${nodeName}". Include 4 options and the correct answer for each. Context: ${body?.description ?? "No additional context."}`;
-  const fallback = {
-    text: `1. What is the main purpose of ${nodeName}? Answer: ${nodeName} concepts. 2. Which prerequisite helps with ${nodeName}? Answer: its required earlier topic. 3. How should you practice ${nodeName}? Answer: with focused exercises.`,
+  const params = {
+    nodeName,
+    description: body?.description,
+    topic: body?.topic,
+    difficulty: body?.difficulty,
+    prerequisites: Array.isArray(body?.prerequisites) ? body.prerequisites : [],
   };
-  const result = await generateWithCache("quiz", prompt, fallback);
+
+  const prompt = buildQuizPrompt(params);
+  const fallbackQuestions = buildFallbackQuiz(params);
+  const fallbackPayload = {
+    questions: fallbackQuestions,
+    text: formatQuizAsText(fallbackQuestions),
+  };
+
+  const result = await generateWithCache("quiz", prompt, fallbackPayload);
+
+  if (result.fallback) {
+    return NextResponse.json({
+      ...fallbackPayload,
+      fallback: true,
+      rateLimited: result.rateLimited,
+      errorReason: result.errorReason,
+    });
+  }
+
+  const rawText =
+    typeof (result.data as { text?: unknown })?.text === "string"
+      ? (result.data as { text: string }).text
+      : "";
+  const parsedQuestions = parseQuizQuestions(rawText);
+
+  if (parsedQuestions) {
+    return NextResponse.json({
+      questions: parsedQuestions,
+      text: formatQuizAsText(parsedQuestions),
+      fallback: false,
+    });
+  }
+
   return NextResponse.json({
-    ...(result.data as Record<string, unknown>),
-    fallback: result.fallback,
+    ...fallbackPayload,
+    fallback: true,
+    errorReason: "AI returned unstructured quiz output; showing fallback questions",
   });
 }
